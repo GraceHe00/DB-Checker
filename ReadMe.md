@@ -13,26 +13,25 @@ _This program cannot verify the QRM status of files in zip folders._
    - This is for the [ws-databricks-indy-indianapolis-centralus-213 workspace](https://adb-7405618167364399.19.azuredatabricks.net/); for other workspaces, use their host url.
 9. name the Databricks profile or press [ENTER] to skip
 10. authenticate your Databricks account in the browser
-* Additional resource: [Install or Update the Databricks CLI | Databricks on AWS](https://docs.databricks.com/aws/en/dev-tools/cli/install)
-  * Instructions for Azure are the same.
- 
-# Files Included
-## config.ini
+* Additional resources (instructions for Azure are the same):
+  * [Install or Update the Databricks CLI | Databricks on AWS](https://docs.databricks.com/aws/en/dev-tools/cli/install)
+  * [Authentication for the Databricks CLI | Databricks on AWS](https://docs.databricks.com/aws/en/dev-tools/cli/authentication)
+  * [Databricks REST API reference](https://docs.databricks.com/api/workspace/introduction)
+
+# Configuration in config.ini
 This file will be automatically created with the default values on the first run of DB_checker.exe if it does not exist. If any variables are omitted or removed from the configuration file, the default values will be used for fallback. (_Default values in italics_)
-### General
+## General
 * `host_url`: This is you Databricks host URL; typically the first part of any DB notebook URL and was used to authenticate Databricks CLI (_https://adb-7405618167364399.19.azuredatabricks.net_)
-* `scrap-indicators`: This is a comma-delimited list of terms or phrases to ignore; any file OR folder that contains that text will be skipped when parsing Databricks files/folders; not case-sensitive (_scrap,xx-,clone_)
 * `workspace_path`: This is the Databricks workspace path that contains the project folders (_/Workspace/Shared/ILM_Project_Codes/_)
 * `client_code`: This is the client code (_0032ILM_)
 * `check_extensions`: This is the toggle to force matching extensions (most of the time notebooks are downloaded as SQL but DB might recognize the notebook as a PY file) (_False_)
-### Download
+## Scrap
+* `contains`: Any notebook title or directory name containing any value in this comma-delimited list of terms or phases will be skipped (_scrap,clone_)
+* `startswith`: Any notebook title or directory name starting with any value in this comma-delimited list of terms or phrases will be skipped (_xx-,copy of_)
+* `endswith`: Any notebook title or directory name ending with any value in this comma-delimited list of terms or phrases will be skipped (_\_tr,- copy_)
+* `show`: not implemented (_False_)
+## Download
 * `download`: This is the toggle to download notebooks flagged as missing (_False_)
 * `export_path`: This is the export location (_current working directory_)
-* `create_file_structure`: If true, files will export to {export_path}\{project code}\{5-Support_Files}\{Support Folder}\{Databricks Programs}; else, files will export to export_path (_True_)
+* `create_file_structure`: If true, files will export to a subfolder with a file structure similar to the S drive ; else, files will export to export_path (_True_)
 * `overwrite`: This is a toggle to overwrite existing files in the export location (_False_)
-
-## main.py
-This is the logic used to build the *.exe file.
-
-## exe_config.json
-This is used to create the *.exe file for [autopytoexe](https://pypi.org/project/auto-py-to-exe/). 'main.py' is the logic used to build the *.exe file based on values in 'exe_config.json.'
