@@ -346,7 +346,7 @@ for p in project_codes:
                 url_cell.hyperlink = p.notebooks[i-2].url
                 url_cell.font = openpyxl.styles.Font(color="0000FF", underline="single")
         else:
-            print(f'There are no Databricks notebooks without {", ".join(scrap_contains)}.')
+            print(f'There are no Databricks notebooks without {", ".join(scrap_contains + scrap_startswith + scrap_endswith)}.')
             continue
     else:
         print(f'\nNo project with code {p.code} found.')
