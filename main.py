@@ -20,31 +20,18 @@ from datetime import datetime
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
 
-def close_program() -> None:
+#%%Close programs
+def close_program(reason='') -> None:
     """
     Offer prompt and close program
     """
-    print('This program will now close.')
+    print(f'{reason}\nThis program will now close.')
     os.system('pause')
     sys.exit()
 
-
-def scrap(name: str) -> bool:
-    """
-    Check if a name contains a scrap indicator
-    """
-    for s in scrap_int:
-        if s in name.lower(): return True
-        else: continue
-    return False
-
 #%%Verify Databricks CLI is installed
-try:
-    print(subprocess.run(['databricks','-v'],capture_output=True,text=True).stdout)
-    started = True
-except:
-    print('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
-    close_program()
+try: print(subprocess.run(['databricks','-v'],capture_output=True,text=True).stdout)
+except: close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
 
 #%%config
 setup = False
@@ -57,6 +44,12 @@ while not setup:
         'workspace_path':'/Workspace/Shared/ILM_Project_Codes/',
         'client_code': '0032ILM',
         'check_extensions':'False'
+    }
+    config['Scrap'] = {
+        'contains':'scrap,clone',
+        'startswith':'xx-,copy of',
+        'endswith':'_tr,- copy',
+        'show':'False'
     }
     config['Download'] = {
         'download':'False',
@@ -71,7 +64,6 @@ while not setup:
 
     config.read('config.ini')
     host_url = config.get('General','host_URL')
-    scrap_int = [c.strip() for c in config.get('General','scrap_indicators').split(',')]
     workspace_path = config.get('General','workspace_path')
     client_code = config.get('General','client_code')
     client = client_code[4:]
@@ -80,10 +72,15 @@ while not setup:
     export_path = config.get('Download','export_path')
     create_file_structure = config.getboolean('Download','create_file_structure')
     overwrite = config.get('Download','overwrite')
+    
+    scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',')]
+    scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',')]
+    scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',')]
+    show_scrap = config.getboolean('Scrap','show')
 
     print('\nConfiguration options:')
-    print(f'Scrap indicators:\t{", ".join(scrap_int)}')
     print(f'Checking extensions:\t{check_ext}')
+    print(f'Scrap indicators:\n\tContains:\t{", ".join(scrap_contains)}\n\tStarts with:\t{", ".join(scrap_startswith)}\n\tEnds with:\t{", ".join(scrap_endswith)}')
     print(f'Download missing:\t{download}')
     if download:
         print(f'Download path:\t\t{export_path}')
@@ -103,6 +100,21 @@ while not setup:
         else:
             print(f'Expecting Y or N, got {inp} instead')
             continue
+#%%Scrap
+def scrap(name: str) -> bool:
+    """
+    Check if a name contains a scrap indicator
+    """
+    for s in scrap_contains:
+        if s in name.lower(): return True
+        else: continue
+    for s in scrap_startswith:
+        if name.startswith(scrap_startswith): return True
+        else: continue
+    for s in scrap_endswith():
+        if name.endswith(scrap_endswith): return True
+        else: continue
+    return False
 
 #%%Project Code
 class projectCode:
@@ -167,6 +179,7 @@ class Notebook:
         self.url = url
         self.support = self.subpath.split('/')[0]
         self.name = self.subpath.split('/')[-1]
+        self.scrap = scrap(self.name)
         
         self.source_path = 'MISSING'
         self.downloaded = False
@@ -255,21 +268,16 @@ class Notebook:
 #%%Verify Databricks CLI is configured
 host_info = subprocess.run(['databricks','auth','describe'],capture_output=True,text=True).stdout
 h = host_info.split()[1]
-if h == 'to':
-    print(f'Databricks profile is not set up!\nconfig.ini:\t{host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
-    close_program()
-elif h != host_url:
-    print(f'Databricks profile does not match config.ini!\nconfig.ini:\t{host_url}\nProfile:\t{h}\nPlease verify Databricks profile or config.ini to re-run.')
-    close_program()
-else:
-    print(host_info)
+if h == 'to': close_program(f'Databricks profile is not set up!\nconfig.ini:\t{host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
+elif h != host_url: close_program(f'Databricks profile does not match config.ini!\nconfig.ini:\t{host_url}\nProfile:\t{h}\nPlease verify Databricks profile or config.ini to re-run.')
+else: print(host_info)
 
 #%%Define project code
 project_codes = []
 p = None
 print('Enter FULL project codes to check. (Press [ENTER] between each entry. Leave blank and press [ENTER] to continue.)')
 while p != '' or len(project_codes) == 0:
-    p = input('>').upper()
+    p = input('>').upper().strip()
     if p != '': project_codes.append(projectCode(p))
 project_codes = sorted([p for p in project_codes],key=lambda x: x.code)
 print(f'Checking {[p.code for p in project_codes]}')
@@ -286,7 +294,7 @@ ws.cell(2,2,workspace_path)
 ws.cell(3,1,'Force same extension:')
 ws.cell(3,2,str(check_ext))
 ws.cell(4,1,'Scrap identifiers:')
-ws.cell(4,2,config.get('General','scrap_indicators'))
+ws.cell(4,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
 
 #%%         
 for p in project_codes:
@@ -338,7 +346,7 @@ for p in project_codes:
                 url_cell.hyperlink = p.notebooks[i-2].url
                 url_cell.font = openpyxl.styles.Font(color="0000FF", underline="single")
         else:
-            print(f'There are no Databricks notebooks without {", ".join(scrap_int)}.')
+            print(f'There are no Databricks notebooks without {", ".join(scrap_contains)}.')
             continue
     else:
         print(f'\nNo project with code {p.code} found.')
