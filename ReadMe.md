@@ -35,3 +35,13 @@ This file will be automatically created with the default values on the first run
 * `export_path`: This is the export location (_current working directory_)
 * `create_file_structure`: If true, files will export to a subfolder with a file structure similar to the S drive ; else, files will export to export_path (_True_)
 * `overwrite`: This is a toggle to overwrite existing files in the export location (_False_)
+
+# Common Issues
+- Databricks CLI not configured correctly.
+  - Verify that your Databricks profile is configured by typing `databricks auth describe` in Windows PowerShell.
+- Files being flagged as unable to read.
+  - Most likely due to the title of the file containing a . or other character. This is currently being fixed.
+- Files/folders are being skipped/flagged as scrap when they shouldn't be.
+  - Verify that those files/folders in question do not contain a scrap indicator as a substring.
+- The program stopped.
+  - Try pressing the down arrow key a few times.
