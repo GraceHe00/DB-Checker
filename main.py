@@ -57,6 +57,9 @@ while not setup:
         'create_file_structure':'True',
         'overwrite':'False',
     }
+    config['Excel'] = {
+        'one-file':'True'
+    }
 
     if not os.path.isfile('config.ini'):
         with open('config.ini', 'w') as configfile:
@@ -72,6 +75,7 @@ while not setup:
     export_path = config.get('Download','export_path')
     create_file_structure = config.getboolean('Download','create_file_structure')
     overwrite = config.get('Download','overwrite')
+    one_file = config.getboolean('Excel','bulk')
     
     scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',')]
     scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',')]
@@ -283,18 +287,36 @@ project_codes = sorted([p for p in project_codes],key=lambda x: x.code)
 print(f'Checking {[p.code for p in project_codes]}')
 
 #%%Make workbook
-wb = openpyxl.Workbook()
-wb.create_sheet('Audit')
-wb.remove(wb['Sheet'])
-ws = wb['Audit']
-ws.cell(1,1,'Run By:')
-ws.cell(1,2,str(os.environ.get('USERNAME')))
-ws.cell(2,1,'Workspace path:')
-ws.cell(2,2,workspace_path)
-ws.cell(3,1,'Force same extension:')
-ws.cell(3,2,str(check_ext))
-ws.cell(4,1,'Scrap identifiers:')
-ws.cell(4,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
+def create_audit(wb_xlsx) -> None:
+    wb_xlsx.create_sheet('Audit')
+    wb_xlsx.remove(wb_xlsx['Sheet'])
+    ws_xlsx = wb_xlsx['Audit']
+    ws_xlsx.cell(1,1,'Run By:')
+    ws_xlsx.cell(1,2,str(os.environ.get('USERNAME')))
+    ws_xlsx.cell(2,1,'Workspace path:')
+    ws_xlsx.cell(2,2,workspace_path)
+    ws_xlsx.cell(3,1,'Force same extension:')
+    ws_xlsx.cell(3,2,str(check_ext))
+    ws_xlsx.cell(4,1,'Scrap identifiers:')
+    ws_xlsx.cell(4,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
+
+def format_xlcols(wb):
+    for sheets in wb.worksheets:
+        for col in sheets.columns:
+            max_length = 0
+            column = col[0].column_letter # Get the column name
+            for cell in col:
+                try: # Necessary to avoid error on empty cells
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2
+            sheets.column_dimensions[column].width = adjusted_width
+
+if one_file:
+    wb = openpyxl.Workbook()
+    create_audit(wb)
 
 #%%         
 for p in project_codes:
@@ -311,19 +333,22 @@ for p in project_codes:
             dirs.remove(dirs[0])
             
         if len(p.notebooks) > 0:
-            #Sort notebooks
-            p.notebooks = sorted([n for n in p.notebooks],key=lambda x: (x.support, x.name))
+            # Sort notebooks
+            p.notebooks = sorted(p.notebooks,key=lambda x: (x.support, x.name))
             
-            #Checking network drives
+            # Checking network drives
             for n in p.notebooks:
                 print(f'{p.code.split("-")[-1]}-{n.subpath.replace('-',': ',1)}')
                 n.match_source_file(p.check_support(n.support))
                 if n.source_path == 'MISSING' and download: n.match_source_file([n.download_missing()])
                 n.check_qrm()
-                print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')
-                    
+                print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')        
             
             # Project code
+            if not one_file:
+                wb = openpyxl.Workbook()
+                create_audit(wb)
+            
             wb.create_sheet(p.code)
             ws = wb[p.code]
             
@@ -345,6 +370,13 @@ for p in project_codes:
                 url_cell = ws.cell(i,6,p.notebooks[i-2].subpath)
                 url_cell.hyperlink = p.notebooks[i-2].url
                 url_cell.font = openpyxl.styles.Font(color="0000FF", underline="single")
+            
+            if not one_file:
+                format_xlcols(wb)
+                xlsx_file = f'DB_Check_{p.code}_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
+                wb.save(xlsx_file)
+                print(f'Saved {xlsx_file}')
+
         else:
             print(f'There are no Databricks notebooks without {", ".join(scrap_contains + scrap_startswith + scrap_endswith)}.')
             continue
@@ -352,23 +384,12 @@ for p in project_codes:
         print(f'\nNo project with code {p.code} found.')
         continue
 
-# %%Format and save workbook
-for sheets in wb.worksheets:
-    for col in sheets.columns:
-         max_length = 0
-         column = col[0].column_letter # Get the column name
-         for cell in col:
-             try: # Necessary to avoid error on empty cells
-                 if len(str(cell.value)) > max_length:
-                     max_length = len(str(cell.value))
-             except:
-                 pass
-         adjusted_width = (max_length + 2) * 1.2
-         sheets.column_dimensions[column].width = adjusted_width
-xlsx_file = f'DB_Check_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
-wb.save(xlsx_file)
-
-#%%End
-print(f'\nOpening {xlsx_file}...')
-os.startfile(xlsx_file)
+#%%save wb
+if one_file:
+    format_xlcols(wb)
+    xlsx_file = f'DB_Check_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
+    wb.save(xlsx_file)
+    print(f'\nOpening {xlsx_file}...')
+    os.startfile(xlsx_file)
+#%% End
 close_program()

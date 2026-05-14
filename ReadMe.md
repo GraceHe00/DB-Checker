@@ -35,6 +35,8 @@ This file will be automatically created with the default values on the first run
 * `export_path`: This is the export location (_current working directory_)
 * `create_file_structure`: If true, files will export to a subfolder with a file structure similar to the S drive ; else, files will export to export_path (_True_)
 * `overwrite`: This is a toggle to overwrite existing files in the export location (_False_)
+## Excel
+* `one_file`: This is a toggle to save log as one file for all project codes. If false, a new Excel workbook will be generated for each project code (_True_)
 
 # Common Issues
 - Databricks CLI not configured correctly.
