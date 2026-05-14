@@ -58,7 +58,8 @@ while not setup:
         'overwrite':'False',
     }
     config['Excel'] = {
-        'one-file':'True'
+        'one_file':'True',
+        'open_file':'True'
     }
 
     if not os.path.isfile('config.ini'):
@@ -75,7 +76,8 @@ while not setup:
     export_path = config.get('Download','export_path')
     create_file_structure = config.getboolean('Download','create_file_structure')
     overwrite = config.get('Download','overwrite')
-    one_file = config.getboolean('Excel','bulk')
+    one_file = config.getboolean('Excel','one_file')
+    open_file = config.getboolean('Excel','open_file')
     
     scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',')]
     scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',')]
@@ -390,6 +392,6 @@ if one_file:
     xlsx_file = f'DB_Check_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
     wb.save(xlsx_file)
     print(f'\nOpening {xlsx_file}...')
-    os.startfile(xlsx_file)
+    if open_file: os.startfile(xlsx_file)
 #%% End
 close_program()

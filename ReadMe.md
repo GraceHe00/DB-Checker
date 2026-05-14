@@ -37,6 +37,8 @@ This file will be automatically created with the default values on the first run
 * `overwrite`: This is a toggle to overwrite existing files in the export location (_False_)
 ## Excel
 * `one_file`: This is a toggle to save log as one file for all project codes. If false, a new Excel workbook will be generated for each project code (_True_)
+* `open_file`: This is a toggle to open the Excel workbook after the program is done running (_True_)
+  * Note: This only works if one_file is selected.
 
 # Common Issues
 - Databricks CLI not configured correctly.
