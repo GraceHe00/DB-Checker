@@ -109,10 +109,10 @@ def scrap(name: str) -> bool:
         if s in name.lower(): return True
         else: continue
     for s in scrap_startswith:
-        if name.startswith(scrap_startswith): return True
+        if name.startswith(s): return True
         else: continue
-    for s in scrap_endswith():
-        if name.endswith(scrap_endswith): return True
+    for s in scrap_endswith:
+        if name.endswith(s): return True
         else: continue
     return False
 
