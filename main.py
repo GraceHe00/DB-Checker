@@ -84,9 +84,10 @@ while not setup:
     scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',')]
     show_scrap = config.getboolean('Scrap','show')
 
-    print('\nConfiguration options:')
+    print('\nCONFIGURATION OPTIONS:')
     print(f'Checking extensions:\t{check_ext}')
     print(f'Scrap indicators:\n\tContains:\t{", ".join(scrap_contains)}\n\tStarts with:\t{", ".join(scrap_startswith)}\n\tEnds with:\t{", ".join(scrap_endswith)}')
+    print(f'Save as one file:\t{one_file}')
     print(f'Download missing:\t{download}')
     if download:
         print(f'Download path:\t\t{export_path}')
