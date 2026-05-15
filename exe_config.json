@@ -18,6 +18,10 @@
    "value": true
   },
   {
+   "optionDest": "icon_file",
+   "value": "S:/Client_Projects/0032ILM/QRM/Databricks Checker/dev/Icon.ico"
+  },
+  {
    "optionDest": "name",
    "value": "DB_Checker"
   },
