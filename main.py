@@ -139,20 +139,25 @@ class projectCode:
     def __str__(self):
         return self.code
     
-    def get_files(self,directory: str) -> None:
+    def get_files(self) -> list:
         """
         Get all non-scrap files in a workspace for a given workspace diretory and add to self.notebooks list
         """
-        for r in subprocess.run(['databricks','workspace','list',directory],capture_output=True,text=True).stdout.splitlines()[1:]:
-            if r.split()[1] == 'NOTEBOOK':
+        main_path = f'{workspace_path}{p}'
+        dirs = [main_path]
+        while len(dirs) != 0:
+            for r in subprocess.run(['databricks','workspace','list',dirs[0]],capture_output=True,text=True).stdout.splitlines()[1:]:
                 path = ' '.join(r.split()[3:])
                 subpath = path.replace(main_path,'')[1:]
-                extension = ext[r.split()[2]]
-                url = f'{host_url}/editor/notebooks/{r.split()[0]}'
-                if not scrap(subpath.split('/')[-1]): self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
-            if r.split()[1] == 'DIRECTORY':
-                name = ' '.join(r.split()[2:])
-                if not scrap(name): dirs.append(name)
+                if r.split()[1] == 'NOTEBOOK':
+                    extension = ext[r.split()[2]]
+                    url = f'{host_url}/editor/notebooks/{r.split()[0]}'
+                    if not scrap(subpath.split('/')[-1]): self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
+                if r.split()[1] == 'DIRECTORY':
+                    if not scrap(subpath.split('/')[-1]): dirs.append(' '.join(r.split()[2:]))
+            dirs.remove(dirs[0])
+        return self.notebooks
+        
     
     def check_support(self,support) -> list:
         """
@@ -336,11 +341,7 @@ for p in project_codes:
         except: print(f'\n{p.code}')
 
         #Pull Databricks files
-        main_path = f'{workspace_path}{p}'
-        dirs = [main_path]
-        while len(dirs) != 0:
-            p.get_files(dirs[0])
-            dirs.remove(dirs[0])
+        p.get_files()
             
         if len(p.notebooks) > 0:
             # Sort notebooks
