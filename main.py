@@ -389,7 +389,10 @@ for p in project_codes:
             if download and create_file_structure:
                 if Path(f'{export_path}/{p.code}').exists():
                     with open(f'{export_path}/{p.code}/ReadMe.txt','a') as readme:
-                        readme.write(f'DB_Checker {version} ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {os.getcwd()}\\DB_Check_{time_signature}.xlsx for more information.\n\n')
+                        xlsx_path = os.getcwd()
+                        if one_file: xlsx_path += f'\\DB_Check_{time_signature}.xlsx'
+                        else: xlsx_path = f'\\DB_Check_{p.code}_{time_signature}.xlsx'
+                        readme.write(f'DB_Checker {version} ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {xlsx_path} for more information.\n\n')
                     readme.close()
 
         else:
