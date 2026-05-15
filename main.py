@@ -20,6 +20,7 @@ from datetime import datetime
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
 
+time_signature = datetime.now().strftime("%Y%m%d%H%M%S")
 #%%Close programs
 def close_program(reason='') -> None:
     """
@@ -376,7 +377,7 @@ for p in project_codes:
             
             if not one_file:
                 format_xlcols(wb)
-                xlsx_file = f'DB_Check_{p.code}_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
+                xlsx_file = f'DB_Check_{p.code}_{time_signature}.xlsx'
                 wb.save(xlsx_file)
                 print(f'Saved {xlsx_file}')
 
@@ -390,7 +391,7 @@ for p in project_codes:
 #%%save wb
 if one_file:
     format_xlcols(wb)
-    xlsx_file = f'DB_Check_{datetime.now().strftime("%Y%m%d%H%M%S")}.xlsx'
+    xlsx_file = f'DB_Check_{time_signature}.xlsx'
     wb.save(xlsx_file)
     print(f'\nOpening {xlsx_file}...')
     if open_file: os.startfile(xlsx_file)
