@@ -19,6 +19,7 @@ from datetime import datetime
 
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
+version = 'v1.6'
 start_time = datetime.now()
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
 
@@ -299,12 +300,14 @@ def create_audit(wb_xlsx) -> None:
     ws_xlsx = wb_xlsx['Audit']
     ws_xlsx.cell(1,1,'Run By:')
     ws_xlsx.cell(1,2,str(os.environ.get('USERNAME')))
-    ws_xlsx.cell(2,1,'Workspace path:')
-    ws_xlsx.cell(2,2,workspace_path)
-    ws_xlsx.cell(3,1,'Force same extension:')
-    ws_xlsx.cell(3,2,str(check_ext))
-    ws_xlsx.cell(4,1,'Scrap identifiers:')
-    ws_xlsx.cell(4,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
+    ws_xlsx.cell(2,1,'DB_Checker Version:')
+    ws_xlsx.cell(2,2,version)
+    ws_xlsx.cell(3,1,'Workspace path:')
+    ws_xlsx.cell(3,2,workspace_path)
+    ws_xlsx.cell(4,1,'Force same extension:')
+    ws_xlsx.cell(4,2,str(check_ext))
+    ws_xlsx.cell(5,1,'Scrap identifiers:')
+    ws_xlsx.cell(5,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
 
 def format_xlcols(wb):
     for sheets in wb.worksheets:
@@ -386,7 +389,7 @@ for p in project_codes:
             if download and create_file_structure:
                 if Path(f'{export_path}/{p.code}').exists():
                     with open(f'{export_path}/{p.code}/ReadMe.txt','a') as readme:
-                        readme.write(f'Ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {os.getcwd()}\\DB_Check_{time_signature}.xlsx for more information.\n\n')
+                        readme.write(f'DB_Checker {version} ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {os.getcwd()}\\DB_Check_{time_signature}.xlsx for more information.\n\n')
                     readme.close()
 
         else:
@@ -403,5 +406,6 @@ if one_file:
     wb.save(xlsx_file)
     print(f'\nOpening {xlsx_file}...')
     if open_file: os.startfile(xlsx_file)
+
 #%% End
 close_program()
