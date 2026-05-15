@@ -15,12 +15,13 @@ from pathlib import Path
 import glob
 import zipfile
 import openpyxl
-import shutil
+from datetime import datetime
 
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
+start_time = datetime.now()
+time_signature = start_time.strftime("%Y%m%d%H%M%S")
 
-time_signature = datetime.now().strftime("%Y%m%d%H%M%S")
 #%%Close programs
 def close_program(reason='') -> None:
     """
@@ -117,10 +118,10 @@ def scrap(name: str) -> bool:
         if s in name.lower(): return True
         else: continue
     for s in scrap_startswith:
-        if name.startswith(s): return True
+        if name.lower().startswith(s): return True
         else: continue
     for s in scrap_endswith:
-        if name.endswith(s): return True
+        if name.lower().endswith(s): return True
         else: continue
     return False
 
@@ -380,6 +381,12 @@ for p in project_codes:
                 xlsx_file = f'DB_Check_{p.code}_{time_signature}.xlsx'
                 wb.save(xlsx_file)
                 print(f'Saved {xlsx_file}')
+            
+            if download and create_file_structure:
+                if Path(f'{export_path}/{p.code}').exists():
+                    with open(f'{export_path}/{p.code}/ReadMe.txt','a') as readme:
+                        readme.write(f'Ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {os.getcwd()}\\DB_Check_{time_signature}.xlsx for more information.\n\n')
+                    readme.close()
 
         else:
             print(f'There are no Databricks notebooks without {", ".join(scrap_contains + scrap_startswith + scrap_endswith)}.')

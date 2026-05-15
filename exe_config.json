@@ -92,10 +92,6 @@
   {
    "optionDest": "hiddenimports",
    "value": "datetime"
-  },
-  {
-    "optionDest": "hiddenimports",
-    "value": "shutil"
   }
  ],
  "nonPyinstallerOptions": {
