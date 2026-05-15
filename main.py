@@ -407,8 +407,9 @@ if one_file:
     format_xlcols(wb)
     xlsx_file = f'DB_Check_{time_signature}.xlsx'
     wb.save(xlsx_file)
-    print(f'\nOpening {xlsx_file}...')
-    if open_file: os.startfile(xlsx_file)
+    if open_file:
+        print(f'\nOpening {xlsx_file}...')
+        os.startfile(xlsx_file)
 
 #%% End
-close_program()
+close_program(f'Runtime:\t{datetime.now() - start_time}')
