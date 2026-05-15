@@ -33,6 +33,7 @@ def close_program(reason='') -> None:
     sys.exit()
 
 #%%Verify Databricks CLI is installed
+print(f'DB Checker {version}')
 try: print(subprocess.run(['databricks','-v'],capture_output=True,text=True).stdout)
 except: close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
 
