@@ -1,3 +1,4 @@
+> Version 1.7
 # About
 Running 'DB_checker.exe' will compare Databricks to SQL, PY, and R files saved on the S: and P: drives and will output an *.xlsx file. This assumes that support folder names are the same in Databricks and the S:/P: drive. It can check through zip folders. This program takes significantly longer larger projects or projects that use a lot of zip folders. This program can run in the background while doing other work. To change settings, use config.ini.<br />
 _This program cannot verify the QRM status of files in zip folders._

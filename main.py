@@ -19,7 +19,7 @@ from datetime import datetime
 
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
-version = 'v1.6'
+version = 'v1.7'
 start_time = datetime.now()
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
 
