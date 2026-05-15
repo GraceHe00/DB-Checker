@@ -19,7 +19,7 @@ from datetime import datetime
 
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
-version = 'v1.7'
+version = 'v1.7.1'
 start_time = datetime.now()
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
 
@@ -148,7 +148,7 @@ class projectCode:
                 subpath = path.replace(main_path,'')[1:]
                 extension = ext[r.split()[2]]
                 url = f'{host_url}/editor/notebooks/{r.split()[0]}'
-                if not scrap(path): self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
+                if not scrap(subpath.split('/')[-1]): self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
             if r.split()[1] == 'DIRECTORY':
                 name = ' '.join(r.split()[2:])
                 if not scrap(name): dirs.append(name)
