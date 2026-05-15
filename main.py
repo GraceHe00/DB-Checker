@@ -224,7 +224,8 @@ class Notebook:
             else: export_dir = f'{export_path}'
             export_dir = export_dir.replace('\\','/')
             os.makedirs(export_dir,exist_ok=True)
-            subprocess.run(['databricks','workspace','export-dir',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
+            if overwrite: subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
+            else: subprocess.run(['databricks','workspace','export-dir',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
             self.source_path = f'{export_dir}/{self.name}{self.extension}'
             self.downloaded = True
         except: print(f'Error downloading {self.name} to {export_dir}')
