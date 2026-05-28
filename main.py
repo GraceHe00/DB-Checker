@@ -19,7 +19,7 @@ from datetime import datetime
 
 #%%init
 ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
-version = 'v1.7.1'
+version = 'v1.7.2'
 start_time = datetime.now()
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
 
@@ -253,7 +253,10 @@ class Notebook:
                     matches = [line for line in f if find.lower() in line.lower()]
                     return [n for n in [m[m.find(start) + len(start):m.find(end)].strip() for m in matches] if n != '']
                 f.close()
-            except: return ['failed']
+            except:
+                if self.source_path == 'MISSING': return ['missing']
+                elif '.zip' in self.source_path: return ['zip']
+                else: return ['failed']
 
     def get_names(self) -> None:
         """
@@ -272,6 +275,8 @@ class Notebook:
         """
         self.get_names()
         if self.initial_author == ['failed']: self.qrm_status = 'Failed to read file'
+        elif self.initial_author == ['zip']: self.qrm_status = 'Cannot read compressed file'
+        elif self.initial_author == ['missing']: self.qrm_status = 'File not downloaded'
         elif len(self.initial_author) == 0: self.qrm_status = 'No author'
         elif len(self.initial_checker) == 0: self.qrm_status = f'No checker, last author: {self.initial_author[0]}'
         elif self.subsequent and len(self.addl_auth) > len(self.addl_check): self.qrm_status = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
