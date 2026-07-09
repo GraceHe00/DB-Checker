@@ -10,6 +10,7 @@ import glob
 import zipfile
 import openpyxl
 from datetime import datetime
+from typing import List
 
 #%%init
 start_time = datetime.now()
@@ -29,10 +30,10 @@ def close_program(message: str = '', pause: bool = False) -> None:
 
     Args:
         message (str):  Message to display before closing (default: '')
-        pause (bool):   Prompt user pause before closing (default: False)
+        pause (bool):   Prompt user pause before closing (default: True)
     """
     print(f'\n{message}')
-    if pause: os.system('pause')
+    if pause: input('Press [ENTER] to close...')
     sys.exit()
 
 #%%Verify Databricks CLI is installed
@@ -109,7 +110,7 @@ while not setup:
         elif inp == 'N':
             valid_answer = True
             print(f'Please update {os.getcwd()}\\config.ini.')
-            os.system('pause')
+            input('Press [ENTER] to continue...')
         else:
             print(f'Expecting Y or N, got {inp} instead')
             continue
@@ -117,6 +118,9 @@ while not setup:
 def scrap(name: str) -> bool:
     """
     Check if a name contains a scrap indicator
+
+    Args:
+        name (str): name of the file to check if it is scrap
     """
     for s in scrap_contains:
         if s in name.lower(): return True
@@ -131,7 +135,7 @@ def scrap(name: str) -> bool:
 
 #%%Project Code
 class projectCode:
-    def __init__(self,code):
+    def __init__(self, code: str):
         self.code = code
         self.s_drive = f'S:/Client_Projects/{client_code}/{self.code}/5-Support_Files'
         self.p_drive = f'P:/PHI/{client}/{self.code}/5-Support_Files'
@@ -141,7 +145,7 @@ class projectCode:
     def __str__(self):
         return self.code
     
-    def get_files(self) -> list:
+    def get_files(self) -> List[str]:
         """
         Get all non-scrap files in a workspace for a given workspace diretory and add to self.notebooks list
         """
@@ -161,7 +165,7 @@ class projectCode:
         return self.notebooks
         
     
-    def check_support(self,support) -> list:
+    def check_support(self, support: str) -> List[str]:
         """
         Return all SQL, Python, and R files from S drive and P drive (if exists) for a given support
         """
@@ -189,7 +193,7 @@ class projectCode:
 
 #%%Notebook
 class Notebook:
-    def __init__(self,code,path,subpath,extension,url):
+    def __init__(self, code: str, path: str, subpath: str, extension: str, url: str):
         self.code = code
         self.path = path
         self.subpath = subpath
@@ -206,7 +210,7 @@ class Notebook:
     
     def __str__(self): return self.name
     
-    def match_source_file(self,source_paths: list) -> bool:
+    def match_source_file(self, source_paths: List[str]) -> bool:
         """
         From a list of possible matching files, update self.source_file if names (and extensios) match
         """
@@ -240,7 +244,7 @@ class Notebook:
         except: print(f'Error downloading {self.name} to {export_dir}')
 
     
-    def get_lines(self, find: str, start=':', end='\n') -> list:
+    def get_lines(self, find: str, start: str = ':', end: str = '\n') -> List[str]:
         """
         Read a source file and attempt to return list of any text between two values
         """
@@ -307,7 +311,7 @@ project_codes = sorted([p for p in project_codes],key=lambda x: x.code)
 print(f'Checking {[p.code for p in project_codes]}')
 
 #%%Make workbook
-def create_audit(wb_xlsx) -> None:
+def create_audit(wb_xlsx: openpyxl.Workbook) -> None:
     wb_xlsx.create_sheet('Audit')
     wb_xlsx.remove(wb_xlsx['Sheet'])
     ws_xlsx = wb_xlsx['Audit']
@@ -322,7 +326,7 @@ def create_audit(wb_xlsx) -> None:
     ws_xlsx.cell(5,1,'Scrap identifiers:')
     ws_xlsx.cell(5,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
 
-def format_xlcols(wb):
+def format_xlcols(wb: openpyxl.Workbook):
     for sheets in wb.worksheets:
         for col in sheets.columns:
             max_length = 0
