@@ -1,6 +1,6 @@
+# libraries
 import configparser
 import os
-
 from . import settings
 
 def setup() -> None:

@@ -1,8 +1,10 @@
-from datetime import datetime
+# libraries
 import re
+from . import settings
 import sys
 
-from . import settings
+# classes
+from datetime import datetime
 
 def log(exception: str, message: str = str(datetime.now())) -> bool:
     """

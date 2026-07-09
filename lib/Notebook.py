@@ -1,9 +1,13 @@
+# libraries
 import os
+from . import settings
 import subprocess
+
+# classes
 from typing import List
 
+# methods
 from .utils import scrap
-from . import settings
 
 class Notebook:
     def __init__(self, code: str, path: str, subpath: str, extension: str, url: str):
