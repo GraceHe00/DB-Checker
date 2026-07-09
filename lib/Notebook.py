@@ -76,7 +76,9 @@ class Notebook:
             self.source_path = f'{export_dir}/{self.name}{self.extension}'
             self.downloaded = True
             return self.source_path
-        except: return f'Error downloading {self.name} to {export_dir}'
+        except:
+            self.source_path = None
+            return f'Error downloading {self.name} to {export_dir}'
 
     def get_lines(self, find: str, start: str = ':', end: str = '\n') -> List[str]:
         """
