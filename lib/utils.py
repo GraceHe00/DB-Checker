@@ -21,7 +21,6 @@ def log(exception: str, message: str = str(datetime.now())) -> bool:
         return True
     except: return False
 
-
 def close_program(message: str = '', pause: bool = False) -> None:
     """
     Prints message and closes program (can toggle user pause)
