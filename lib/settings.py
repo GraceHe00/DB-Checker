@@ -4,7 +4,7 @@ from typing import List
 def init() -> None:
     global version
     with open('ReadMe.md','r') as f:
-        version = f.read()[10:15]
+        version = str(f.readline().strip().split()[-1])
     f.close()
         
     global ext
