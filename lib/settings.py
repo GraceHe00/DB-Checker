@@ -1,3 +1,5 @@
+from typing import List
+
 def init() -> None:
     # initialized in config.ini file
     global host_url
@@ -15,6 +17,22 @@ def init() -> None:
     global scrap_startswith
     global scrap_endswith
     global show_scrap
+
+    host_url: str
+    workspace_path: str
+    client_code: str
+    client: str
+    check_ext: bool
+    download: bool
+    export_path: str
+    create_file_structure: str
+    overwrite: bool 
+    one_file: bool
+    open_file: bool
+    scrap_contains: List[str]
+    scrap_startswith: List[str]
+    scrap_endswith: List[str]
+    show_scrap: bool
     
     global ext
     ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
