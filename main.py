@@ -23,12 +23,16 @@ with open('ReadMe.md','r') as f:
 print(f'v{version}\n')
 
 #%%Close programs
-def close_program(reason='') -> None:
+def close_program(message: str = '', pause: bool = False) -> None:
     """
-    Offer prompt and close program
+    Prints message and closes program (can toggle user pause)
+
+    Args:
+        message (str):  Message to display before closing (default: '')
+        pause (bool):   Prompt user pause before closing (default: False)
     """
-    print(f'{reason}\nThis program will now close.')
-    os.system('pause')
+    print(f'\n{message}')
+    if pause: os.system('pause')
     sys.exit()
 
 #%%Verify Databricks CLI is installed
