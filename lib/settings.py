@@ -19,13 +19,11 @@ def init() -> None:
     global download
     global export_path
     global create_file_structure
-    global overwrite
     global one_file
     global open_file
     global scrap_contains
     global scrap_startswith
     global scrap_endswith
-    global show_scrap
 
 host_url: str 
 workspace_path: str
@@ -35,10 +33,8 @@ check_ext: bool
 download: bool
 export_path: str
 create_file_structure: str
-overwrite: bool 
 one_file: bool
 open_file: bool
 scrap_contains: List[str]
 scrap_startswith: List[str]
 scrap_endswith: List[str]
-show_scrap: bool

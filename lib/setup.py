@@ -13,7 +13,6 @@ def setup() -> None:
 
         config['General'] = {
             'host_URL':'https://adb-7405618167364399.19.azuredatabricks.net',
-            'scrap_indicators':'scrap,xx-,clone',
             'workspace_path':'/Workspace/Shared/ILM_Project_Codes/',
             'client_code': '0032ILM',
             'check_extensions':'False'
@@ -21,14 +20,12 @@ def setup() -> None:
         config['Scrap'] = {
             'contains':'scrap,clone',
             'startswith':'xx-,copy of',
-            'endswith':'_tr,- copy',
-            'show':'False'
+            'endswith':'_tr,- copy'
         }
         config['Download'] = {
             'download':'False',
             'export_path':os.getcwd(),
-            'create_file_structure':'True',
-            'overwrite':'False',
+            'create_file_structure':'True'
         }
         config['Excel'] = {
             'one_file':'True',
@@ -48,14 +45,12 @@ def setup() -> None:
         settings.download = config.getboolean('Download','download')
         settings.export_path = config.get('Download','export_path')
         settings.create_file_structure = config.getboolean('Download','create_file_structure')
-        settings.overwrite = config.get('Download','overwrite')
         settings.one_file = config.getboolean('Excel','one_file')
         settings.open_file = config.getboolean('Excel','open_file')
         
         settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',')]
         settings.scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',')]
         settings.scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',')]
-        settings.show_scrap = config.getboolean('Scrap','show')
 
         print('\nCONFIGURATION OPTIONS:')
         print(f'Checking extensions:\t{settings.check_ext}')
@@ -65,7 +60,6 @@ def setup() -> None:
         if settings.download:
             print(f'Download path:\t\t{settings.export_path}')
             print(f'Create file structure:\t{settings.create_file_structure}')
-            print(f'Overwrite:\t\t{settings.overwrite}')
         print('\nAre these configuration settings correct? [Y] Yes or [N]')
         valid_answer = False
         while not valid_answer:
