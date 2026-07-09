@@ -1,4 +1,5 @@
 def init() -> None:
+    # initialized in config.ini file
     global host_url
     global workspace_path
     global client_code
@@ -14,3 +15,6 @@ def init() -> None:
     global scrap_startswith
     global scrap_endswith
     global show_scrap
+    
+    global ext
+    ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
