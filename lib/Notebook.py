@@ -72,14 +72,12 @@ class Notebook:
         export_dir = export_dir.replace('\\','/')
         try:
             os.makedirs(export_dir,exist_ok=True)
-            if settings.overwrite: subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
-            else: subprocess.run(['databricks','workspace','export-dir',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
+            subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
             self.source_path = f'{export_dir}/{self.name}{self.extension}'
             self.downloaded = True
             return self.source_path
         except: return f'Error downloading {self.name} to {export_dir}'
 
-    
     def get_lines(self, find: str, start: str = ':', end: str = '\n') -> List[str]:
         """
         Read a source file and attempt to return list of any text between two values
