@@ -1,25 +1,6 @@
 # libraries
-import re
 from . import settings
 import sys
-
-# classes
-from datetime import datetime
-
-def log(exception: str, message: str = str(datetime.now())) -> bool:
-    """
-    Writes errors to a log
-
-    Args:
-        exception (str):    Excpetion message
-        message (str):      Any additional information to write (default: current time)
-    """
-    try:
-        with open('logs.txt', 'a') as file:
-            file.write(f'{message}\n{exception}\n\n')
-            file.close()
-        return True
-    except: return False
 
 def close_program(message: str = '', pause: bool = False) -> None:
     """
@@ -27,7 +8,7 @@ def close_program(message: str = '', pause: bool = False) -> None:
 
     Args:
         message (str):  Message to display before closing (default: '')
-        pause (bool):   Prompt user pause before closing (default: True)
+        pause (bool):   Prompt user pause before closing (default: False)
     """
     print(f'\n{message}')
     if pause: input('Press [ENTER] to close...')
@@ -41,7 +22,7 @@ def scrap(name: str) -> bool:
         name (str): name of the file to check if it is scrap
     """
     for s in settings.scrap_contains:
-        if re.search(name.lower(), s): return True
+        if s in name.lower(): return True
         else: continue
     for s in settings.scrap_startswith:
         if name.lower().startswith(s): return True
