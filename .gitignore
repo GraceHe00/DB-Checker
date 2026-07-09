@@ -2,3 +2,4 @@ config.ini
 *.xlsx
 *.exe
 *.sql
+lib/__pycache__
