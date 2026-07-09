@@ -13,6 +13,8 @@ def host_info() -> str | None:
     Returns host info
     """
     auth_info = subprocess.run(['databricks','auth','describe'],capture_output=True,text=True).stdout
-    host_url= auth_info.split()[1]
-    if host_url == 'to': return None
-    else: return host_url
+    try:
+        host_url= auth_info.split()[1]
+        if host_url == 'to': return None
+        else: return host_url
+    except: return None
