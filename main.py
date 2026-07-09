@@ -16,24 +16,27 @@ from pathlib import Path
 from lib.ProjectCode import ProjectCode
 
 # methods
-from lib.setup import setup
+from lib.setup import setup_config
 
 #%% INITIALIZATION
 # define start
 start_time = datetime.now()
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
 settings.init()
-setup()
+setup_config()
 
 # print version
 print(f'DB Checker                            ')
 print(f'v{settings.version}\n')
 
 # Databricks CLI verification
-if db.version() == None: utils.close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
-elif db.host_info() == None: utils.close_program(f'Databricks profile is not set up!\nconfig.ini:\t{settings.host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
-elif db.host_info() != settings.host_url: utils.close_program(f'Databricks profile does not match config.ini!\nconfig.ini:\t{settings.host_url}\nProfile:\t{db.host_info()}\nPlease verify Databricks profile or config.ini to re-run.')
-else: print(f'{db.version()}{db.host_info()}\n')
+cli_version = db.version()
+if db.version is None: utils.close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
+
+host_url = db.host_info()
+if host_url is None: utils.close_program(f'Databricks profile is not set up!\nconfig.ini:\t{settings.host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
+elif host_url != settings.host_url: utils.close_program(f'Databricks profile does not match config.ini!\nconfig.ini:\t{settings.host_url}\nProfile:\t{host_url}\nPlease verify Databricks profile or config.ini to re-run.')
+else: print(f'{cli_version}{host_url}\n')
 
 #%% START
 # get project codes

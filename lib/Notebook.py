@@ -18,7 +18,7 @@ class Notebook:
             code (str):                 This is the project code associated with this notebook.
             path (str):                 This is the Databricks path from the Workspace of this notebook.
             subpath (str):              This is the Databricks path from the project code of this notebook.
-            extension (str):            This is the associated extension of this notebook (liekly either SQL or PY)
+            extension (str):            This is the associated extension of this notebook (likely either SQL or PY)
             url (str):                  This is the website link to the notebook on Databricks.
 
             source_path (str | None):   This is the directory path to the source file if it exists.

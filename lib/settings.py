@@ -32,7 +32,7 @@ client: str
 check_ext: bool
 download: bool
 export_path: str
-create_file_structure: str
+create_file_structure: bool
 one_file: bool
 open_file: bool
 scrap_contains: List[str]

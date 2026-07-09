@@ -3,7 +3,7 @@ import configparser
 import os
 from . import settings
 
-def setup() -> None:
+def setup_config() -> None:
     """
     Set up the configuration for DB Checker
     """

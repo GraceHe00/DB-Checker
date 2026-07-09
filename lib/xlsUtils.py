@@ -94,7 +94,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
         ws.cell(i,3,q)
 
         if not settings.download: d = 'N/A'
-        elif nb.downloaded == None: d = 'N/A'
+        elif nb.downloaded is None: d = 'N/A'
         elif nb.downloaded: d = 'Yes'
         else: d = 'Failed'
         ws.cell(i,4,d)
@@ -105,12 +105,12 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
 
 def save(wb: openpyxl.Workbook, path: str, confirmation: bool = True) -> None:
     """
-    Attempt to save an Excel workbook, allowing retrys if the file is open
+    Attempt to save an Excel workbook, allowing retries if the file is open
 
     Args:
-        workbook (openpyxl.workbook):   openpyxl workbook object
-        path (str):                     Path of Excel workbook
-        confirmation (bool):            print confirmation message
+        wb (openpyxl.workbook): openpyxl workbook object
+        path (str):             Path of Excel workbook
+        confirmation (bool):    print confirmation message
     """
     saved = False
     while not saved:
