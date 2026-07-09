@@ -63,7 +63,7 @@ for project in project_codes:
             
             # check network drives
             for n in project.notebooks:
-                print(f'{project.code.split("-")[-1]}-{n.subpath.replace('-',': ',1)}')
+                print(f'{project.code.split("-")[-1]}-{n.subpath.replace("-",": ",1)}')
                 n.match_source_file(project.check_support(n.support))
                 if n.source_path is None and settings.download: n.match_source_file([n.download_missing()])
                 n.check_qrm()
