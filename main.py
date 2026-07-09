@@ -33,7 +33,7 @@ print(f'v{settings.version}\n')
 if db.version() == None: utils.close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
 elif db.host_info() == None: utils.close_program(f'Databricks profile is not set up!\nconfig.ini:\t{settings.host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
 elif db.host_info() != settings.host_url: utils.close_program(f'Databricks profile does not match config.ini!\nconfig.ini:\t{settings.host_url}\nProfile:\t{db.host_info()}\nPlease verify Databricks profile or config.ini to re-run.')
-else: print(db.version())
+else: print(f'{db.version()}{db.host_info()}\n')
 
 #%% START
 # get project codes
@@ -65,7 +65,7 @@ for project in project_codes:
             for n in project.notebooks:
                 print(f'{project.code.split("-")[-1]}-{n.subpath.replace('-',': ',1)}')
                 n.match_source_file(project.check_support(n.support))
-                if n.source_path == 'MISSING' and settings.download: n.match_source_file([n.download_missing()])
+                if n.source_path is None and settings.download: n.match_source_file([n.download_missing()])
                 n.check_qrm()
                 print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')        
             

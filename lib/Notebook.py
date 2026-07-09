@@ -63,20 +63,21 @@ class Notebook:
             except: continue
         return False
     
-    def download_missing(self) -> None:
+    def download_missing(self) -> str:
         """
         Download notebook
         """
+        if settings.create_file_structure: export_dir = f'{settings.export_path}/{self.code}/5-Support_Files/{self.support}/Databricks_Programs'
+        else: export_dir = f'{settings.export_path}'
+        export_dir = export_dir.replace('\\','/')
         try:
-            if settings.create_file_structure: export_dir = f'{settings.export_path}/{self.code}/5-Support_Files/{self.support}/Databricks_Programs'
-            else: export_dir = f'{settings.export_path}'
-            export_dir = export_dir.replace('\\','/')
             os.makedirs(export_dir,exist_ok=True)
             if settings.overwrite: subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
             else: subprocess.run(['databricks','workspace','export-dir',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
             self.source_path = f'{export_dir}/{self.name}{self.extension}'
             self.downloaded = True
-        except: print(f'Error downloading {self.name} to {export_dir}') # type: ignore
+            return self.source_path
+        except: return f'Error downloading {self.name} to {export_dir}'
 
     
     def get_lines(self, find: str, start: str = ':', end: str = '\n') -> List[str]:
