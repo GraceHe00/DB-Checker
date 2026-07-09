@@ -48,6 +48,7 @@ class ProjectCode:
         dirs = [main_path]
         while len(dirs) != 0:
             for r in subprocess.run(['databricks','workspace','list',dirs[0]],capture_output=True,text=True).stdout.splitlines()[1:]:
+                if len(r.split()) <= 4: continue
                 path = ' '.join(r.split()[3:])
                 subpath = path.replace(main_path,'')[1:]
                 if r.split()[1] == 'NOTEBOOK':
