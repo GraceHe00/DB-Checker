@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr 29 10:45:49 2026
-
-@author: Grace.Hedges
-"""
-print('Initializing libraries... Please wait.')
+print('Initializing libraries... Please wait.', end='\r')
 
 #%%libraries
 import os
@@ -18,10 +12,15 @@ import openpyxl
 from datetime import datetime
 
 #%%init
-ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
-version = 'v1.7.2'
 start_time = datetime.now()
+ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
+
+print(f'DB Checker                            ')
+with open('ReadMe.md','r') as f:
+    version = f.read()[10:15]
+    f.close()
+print(f'v{version}\n')
 
 #%%Close programs
 def close_program(reason='') -> None:
@@ -33,7 +32,6 @@ def close_program(reason='') -> None:
     sys.exit()
 
 #%%Verify Databricks CLI is installed
-print(f'DB Checker {version}')
 try: print(subprocess.run(['databricks','-v'],capture_output=True,text=True).stdout)
 except: close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
 
