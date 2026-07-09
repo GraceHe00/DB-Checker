@@ -2,6 +2,14 @@
 from typing import List
 
 def init() -> None:
+    global version
+    with open('ReadMe.md','r') as f:
+        version = f.read()[10:15]
+    f.close()
+        
+    global ext
+    ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
+
     # initialized in config.ini file
     global host_url
     global workspace_path
@@ -34,6 +42,3 @@ def init() -> None:
     scrap_startswith: List[str]
     scrap_endswith: List[str]
     show_scrap: bool
-    
-    global ext
-    ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
