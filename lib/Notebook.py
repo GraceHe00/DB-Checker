@@ -11,11 +11,16 @@ class Notebook:
         Represents a Databricks notebook
 
         Args:
-            code (str):         This is the project code associated with this notebook.
-            path (str):         This is the Databricks path from the Workspace of this notebook.
-            subpath (str):      This is the Databricks path from the project code of this notebook.
-            extension (str):    This is the associated extension of this notebook (liekly either SQL or PY)
-            url (str):          This is the website link to the notebook on Databricks.
+            code (str):                 This is the project code associated with this notebook.
+            path (str):                 This is the Databricks path from the Workspace of this notebook.
+            subpath (str):              This is the Databricks path from the project code of this notebook.
+            extension (str):            This is the associated extension of this notebook (liekly either SQL or PY)
+            url (str):                  This is the website link to the notebook on Databricks.
+
+            source_path (str | None):   This is the directory path to the source file if it exists.
+            downloaded (bool | None):   This is whether the source file has been downloaded by this program. If it is None, then it is not applicable because it was already saved to the network.
+            qrm (bool):                 This is whether this notebook has been reviewed.
+            qrm_status (str):           This is a more granular breakdown of self.qrm, giving info on authors and reviewers.
         """
         self.code = code
         self.path = path
@@ -26,8 +31,8 @@ class Notebook:
         self.name = self.subpath.split('/')[-1]
         self.scrap = scrap(self.name)
         
-        self.source_path = 'MISSING'
-        self.downloaded = False
+        self.source_path: str | None = None
+        self.downloaded: bool | None = None
         self.qrm = False
         self.qrm_status = 'Not reviewed'
     
@@ -79,6 +84,7 @@ class Notebook:
             start (str):    
             end (str):      
         """
+        if self.source_path == None: return ['missing']
         try:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
@@ -91,8 +97,7 @@ class Notebook:
                     return [n for n in [m[m.find(start) + len(start):m.find(end)].strip() for m in matches] if n != '']
                 f.close()
             except:
-                if self.source_path == 'MISSING': return ['missing']
-                elif '.zip' in self.source_path: return ['zip']
+                if '.zip' in self.source_path: return ['zip']
                 else: return ['failed']
 
     def get_names(self) -> None:
