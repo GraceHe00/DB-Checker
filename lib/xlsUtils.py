@@ -94,7 +94,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
         elif nb.source_path is None: qrm = 'MISSING'
         else: qrm = 'ISSUE'
         
-        if settings.download: d = 'N/A'
+        if not settings.download: d = 'N/A'
         elif nb.downloaded is None: d = 'N/A'
         elif nb.downloaded: d = 'Yes'
         else: d = 'Failed'
