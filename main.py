@@ -32,7 +32,7 @@ setup_config()
 
 # Databricks CLI verification
 cli_version = db.version()
-if db.version is None: utils.close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
+if cli_version is None: utils.close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
 
 host_url = db.host_info()
 if host_url is None: utils.close_program(f'Databricks profile is not set up!\nconfig.ini:\t{settings.host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
@@ -107,7 +107,7 @@ for project in project_codes:
         continue
 
 # format and save workbook if doing a singular file and open if settings.open_file
-if wb != None:
+if wb is not None:
     xl.fit_columns(wb)
     xlsx_file = f'DB_Check_{time_signature}.xlsx'
     xl.save(wb, xlsx_file)
