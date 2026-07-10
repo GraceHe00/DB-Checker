@@ -3,9 +3,7 @@ from typing import List
 
 def init() -> None:
     global version
-    with open('ReadMe.md','r') as f:
-        version = str(f.readline().strip().split()[-1])
-    f.close()
+    version = '1.8.0'
         
     global ext
     ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
