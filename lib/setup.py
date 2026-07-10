@@ -74,3 +74,4 @@ def setup_config() -> None:
             else:
                 print(f'Expecting Y or N, got {inp} instead')
                 continue
+    print()

@@ -26,7 +26,7 @@ settings.init()
 
 # print version
 print(f'DB Checker                            ')
-print(f'v{settings.version}\n')
+print(f'v{settings.version}')
 
 setup_config()
 
@@ -48,7 +48,7 @@ while p != '' or len(project_codes) == 0:
     p = input('>').upper().strip()
     if p != '': project_codes.append(ProjectCode(p))
 project_codes = sorted([p for p in project_codes],key=lambda x: x.code)
-print(f'Checking {[p.code for p in project_codes]}')
+print(f'Checking {[p.code for p in project_codes]}\n')
 
 wb: openpyxl.Workbook | None = None
 
@@ -56,7 +56,7 @@ wb: openpyxl.Workbook | None = None
 for project in project_codes:
     if project.exist:
         # print project name (or code)
-        print(project)
+        print(f'\n{project}')
 
         # get all Databricks notebooks
         project.get_files()
