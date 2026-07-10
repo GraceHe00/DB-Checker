@@ -11,7 +11,6 @@ def setup_config() -> None:
     while not setup:
 
         config = configparser.ConfigParser()
-        settings.spinner.start(text='Reading configuration options...')
         config['General'] = {
             'host_URL':'https://adb-7405618167364399.19.azuredatabricks.net',
             'workspace_path':'/Workspace/Shared/ILM_Project_Codes/',
@@ -53,7 +52,6 @@ def setup_config() -> None:
         settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',') if c.strip() != '']
         settings.scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',') if c.strip() != '']
         settings.scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',') if c.strip() != '']
-        settings.spinner.stop()
 
         print('\nCONFIGURATION OPTIONS:')
         print(f'Checking extensions:\t{settings.check_ext}')

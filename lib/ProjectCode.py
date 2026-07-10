@@ -51,7 +51,10 @@ class ProjectCode:
         main_path = f'{settings.workspace_path}{self.code}'
         dirs = [main_path]
         while len(dirs) != 0:
-            settings.spinner.start(text=f'Indexing {dirs[0]}...')
+            if scrap(dirs[0]):
+                dirs.remove(dirs[0])
+                continue
+            settings.spinner.start(text=f'Indexing {dirs[0]}...') # pyright: ignore[reportUnknownMemberType]
             for r in subprocess.run(['databricks','workspace','list',dirs[0]],capture_output=True,text=True).stdout.splitlines()[1:]:
                 try:
                     if r.split()[1] == 'DIRECTORY': dirs.append(' '.join(r.split()[2:]))
@@ -65,7 +68,7 @@ class ProjectCode:
                         url = f'{settings.host_url}/editor/notebooks/{r.split()[0]}'
                         self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
                 except: pass
-            settings.spinner.stop()
+            settings.spinner.stop() # pyright: ignore[reportUnknownMemberType]
             dirs.remove(dirs[0])
         return self.notebooks
         
@@ -79,7 +82,7 @@ class ProjectCode:
         """
         try: return self.supports[support]
         except:
-            settings.spinner.start(f'Indexing {support}...')
+            settings.spinner.start(f'Indexing {support}...') # pyright: ignore[reportUnknownMemberType]
             m: List[str] = []
             for e in settings.ext.values():
                 m += [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*{e}', recursive=True)]
@@ -96,7 +99,7 @@ class ProjectCode:
                             m += [f'{zip_file}/{z.filename}' for z in zf.infolist() if z.filename.endswith(e)]
                             zf.close()
             self.supports[support] = m
-            settings.spinner.stop()
+            settings.spinner.stop() # pyright: ignore[reportUnknownMemberType]
             return m
     
     def get_name(self) -> None:
