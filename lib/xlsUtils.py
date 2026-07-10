@@ -67,12 +67,16 @@ def write_headers(ws: Worksheet) -> None:
     Args:
         ws (openpyxl.Worksheet):    This is the worksheet that will have the new headers.
     """
-    ws.cell(1,1,'Support')
-    ws.cell(1,2,'Notebook Name')
-    ws.cell(1,3,'QRM Status')
-    ws.cell(1,4,'Now downloaded')
-    ws.cell(1,5,'Source File')
-    ws.cell(1,6,'Notebook URL')
+    headers = [
+        'Support',
+        'Notebook Name',
+        'QRM Status',
+        'QRM Detail',
+        'Downloaded by DB Checker',
+        'Source File',
+        'Notebook URL'
+    ]
+    for i in range(1, len(headers) + 1): ws.cell(1,i,headers[i-1])
 
 def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
     """
@@ -85,22 +89,32 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
     # loop through cells, skip headers
     for i in range(2, len(notebooks)+2):
         nb = notebooks[i-2]
+
+        if nb.qrm: qrm = 'OK.'
+        elif nb.source_path is None: qrm = 'MISSING'
+        else: qrm = 'ISSUE'
         
-        ws.cell(i,1,nb.support)
-        ws.cell(i,2,nb.name)
-
-        if nb.qrm: q = 'OK.'
-        else: q = nb.qrm_status
-        ws.cell(i,3,q)
-
-        if not settings.download: d = 'N/A'
+        if settings.download: d = 'N/A'
         elif nb.downloaded is None: d = 'N/A'
         elif nb.downloaded: d = 'Yes'
         else: d = 'Failed'
-        ws.cell(i,4,d)
 
-        ws.cell(i,5,nb.source_path)
-        url_cell = ws.cell(i,6,nb.subpath)
+        if nb.source_path is None: source_path = ''
+        else: source_path = nb.source_path
+
+        data: List[str] = [
+            nb.support,
+            nb.name,
+            qrm,
+            nb.qrm_status,
+            d,
+            source_path,
+            nb.url
+        ]
+
+        for j in range(1, len(data)): ws.cell(i,j,data[j-1])
+
+        url_cell = ws.cell(i,len(data),data[-1])
         hyperlink(url_cell, nb.url)
 
 def save(wb: openpyxl.Workbook, path: str, confirmation: bool = True) -> None:
