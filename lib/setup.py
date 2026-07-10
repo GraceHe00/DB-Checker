@@ -60,7 +60,7 @@ def setup_config() -> None:
         if settings.download:
             print(f'Download path:\t\t{settings.export_path}')
             print(f'Create file structure:\t{settings.create_file_structure}')
-        print('\nAre these configuration settings correct? [Y] Yes or [N]')
+        print('\nAre these configuration settings correct? [Y] Yes or [N] No')
         valid_answer = False
         while not valid_answer:
             inp = input('>').upper()
