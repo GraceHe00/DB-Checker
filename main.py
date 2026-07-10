@@ -23,11 +23,12 @@ from lib.setup import setup_config
 start_time = datetime.now()
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
 settings.init()
-setup_config()
 
 # print version
 print(f'DB Checker                            ')
 print(f'v{settings.version}\n')
+
+setup_config()
 
 # Databricks CLI verification
 cli_version = db.version()
