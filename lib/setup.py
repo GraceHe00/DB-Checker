@@ -48,9 +48,9 @@ def setup_config() -> None:
         settings.one_file = config.getboolean('Excel','one_file')
         settings.open_file = config.getboolean('Excel','open_file')
         
-        settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',')]
-        settings.scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',')]
-        settings.scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',')]
+        settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',') if c.strip() != '']
+        settings.scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',') if c.strip() != '']
+        settings.scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',') if c.strip() != '']
 
         print('\nCONFIGURATION OPTIONS:')
         print(f'Checking extensions:\t{settings.check_ext}')

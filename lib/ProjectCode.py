@@ -56,11 +56,11 @@ class ProjectCode:
                 path = ' '.join(r.split()[3:])
                 subpath = path.replace(main_path,'')[1:]
                 if r.split()[1] == 'NOTEBOOK':
+                    if scrap(subpath): continue
                     extension = settings.ext[r.split()[2]]
                     url = f'{settings.host_url}/editor/notebooks/{r.split()[0]}'
-                    if not scrap(subpath.split('/')[-1]): self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
-                if r.split()[1] == 'DIRECTORY':
-                    if not scrap(subpath.split('/')[-1]): dirs.append(' '.join(r.split()[2:]))
+                    self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
+                if r.split()[1] == 'DIRECTORY': dirs.append(' '.join(r.split()[2:]))
             dirs.remove(dirs[0])
         return self.notebooks
         
