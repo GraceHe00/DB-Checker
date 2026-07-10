@@ -1,424 +1,119 @@
 print('Initializing libraries... Please wait.', end='\r')
 
-#%%libraries
-import os
-import configparser
-import subprocess
-import sys
-from pathlib import Path
-import glob
-import zipfile
+#%% IMPORT
+# libraries
+import lib.databricksUtils as db
 import openpyxl
+import os
+import lib.settings as settings
+import lib.utils as utils
+import lib.xlsUtils as xl
+
+# classes
 from datetime import datetime
+from typing import List
+from pathlib import Path
+from lib.ProjectCode import ProjectCode
 
-#%%init
+# methods
+from lib.setup import setup_config
+
+#%% INITIALIZATION
+# define start
 start_time = datetime.now()
-ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
 time_signature = start_time.strftime("%Y%m%d%H%M%S")
+settings.init()
 
+# print version
 print(f'DB Checker                            ')
-with open('ReadMe.md','r') as f:
-    version = f.read()[10:15]
-    f.close()
-print(f'v{version}\n')
+print(f'v{settings.version}')
 
-#%%Close programs
-def close_program(message: str = '', pause: bool = False) -> None:
-    """
-    Prints message and closes program (can toggle user pause)
+setup_config()
 
-    Args:
-        message (str):  Message to display before closing (default: '')
-        pause (bool):   Prompt user pause before closing (default: False)
-    """
-    print(f'\n{message}')
-    if pause: os.system('pause')
-    sys.exit()
+# Databricks CLI verification
+cli_version = db.version()
+if cli_version is None: utils.close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
 
-#%%Verify Databricks CLI is installed
-try: print(subprocess.run(['databricks','-v'],capture_output=True,text=True).stdout)
-except: close_program('Databricks CLI not installed!\nPlease see ReadMe for more information to set up Databricks CLI.')
+host_url = db.host_info()
+if host_url is None: utils.close_program(f'Databricks profile is not set up!\nconfig.ini:\t{settings.host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
+elif host_url != settings.host_url: utils.close_program(f'Databricks profile does not match config.ini!\nconfig.ini:\t{settings.host_url}\nProfile:\t{host_url}\nPlease verify Databricks profile or config.ini to re-run.')
+else: print(f'{cli_version}{host_url}\n')
 
-#%%config
-setup = False
-while not setup:
-    config = configparser.ConfigParser()
-
-    config['General'] = {
-        'host_URL':'https://adb-7405618167364399.19.azuredatabricks.net',
-        'scrap_indicators':'scrap,xx-,clone',
-        'workspace_path':'/Workspace/Shared/ILM_Project_Codes/',
-        'client_code': '0032ILM',
-        'check_extensions':'False'
-    }
-    config['Scrap'] = {
-        'contains':'scrap,clone',
-        'startswith':'xx-,copy of',
-        'endswith':'_tr,- copy',
-        'show':'False'
-    }
-    config['Download'] = {
-        'download':'False',
-        'export_path':os.getcwd(),
-        'create_file_structure':'True',
-        'overwrite':'False',
-    }
-    config['Excel'] = {
-        'one_file':'True',
-        'open_file':'True'
-    }
-
-    if not os.path.isfile('config.ini'):
-        with open('config.ini', 'w') as configfile:
-            config.write(configfile)
-
-    config.read('config.ini')
-    host_url = config.get('General','host_URL')
-    workspace_path = config.get('General','workspace_path')
-    client_code = config.get('General','client_code')
-    client = client_code[4:]
-    check_ext = config.getboolean('General','check_extensions')
-    download = config.getboolean('Download','download')
-    export_path = config.get('Download','export_path')
-    create_file_structure = config.getboolean('Download','create_file_structure')
-    overwrite = config.get('Download','overwrite')
-    one_file = config.getboolean('Excel','one_file')
-    open_file = config.getboolean('Excel','open_file')
-    
-    scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',')]
-    scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',')]
-    scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',')]
-    show_scrap = config.getboolean('Scrap','show')
-
-    print('\nCONFIGURATION OPTIONS:')
-    print(f'Checking extensions:\t{check_ext}')
-    print(f'Scrap indicators:\n\tContains:\t{", ".join(scrap_contains)}\n\tStarts with:\t{", ".join(scrap_startswith)}\n\tEnds with:\t{", ".join(scrap_endswith)}')
-    print(f'Save as one file:\t{one_file}')
-    print(f'Download missing:\t{download}')
-    if download:
-        print(f'Download path:\t\t{export_path}')
-        print(f'Create file structure:\t{create_file_structure}')
-        print(f'Overwrite:\t\t{overwrite}')
-    print('\nAre these configuration settings correct? [Y] Yes or [N]')
-    valid_answer = False
-    while not valid_answer:
-        inp = input('>').upper()
-        if inp == 'Y':
-            valid_answer = True
-            setup = True
-        elif inp == 'N':
-            valid_answer = True
-            print(f'Please update {os.getcwd()}\\config.ini.')
-            os.system('pause')
-        else:
-            print(f'Expecting Y or N, got {inp} instead')
-            continue
-#%%Scrap
-def scrap(name: str) -> bool:
-    """
-    Check if a name contains a scrap indicator
-    """
-    for s in scrap_contains:
-        if s in name.lower(): return True
-        else: continue
-    for s in scrap_startswith:
-        if name.lower().startswith(s): return True
-        else: continue
-    for s in scrap_endswith:
-        if name.lower().endswith(s): return True
-        else: continue
-    return False
-
-#%%Project Code
-class projectCode:
-    def __init__(self,code):
-        self.code = code
-        self.s_drive = f'S:/Client_Projects/{client_code}/{self.code}/5-Support_Files'
-        self.p_drive = f'P:/PHI/{client}/{self.code}/5-Support_Files'
-        self.notebooks = []
-        self.exist = Path(f'S:/Client_Projects/{client_code}/{self.code}').exists()
-    
-    def __str__(self):
-        return self.code
-    
-    def get_files(self) -> list:
-        """
-        Get all non-scrap files in a workspace for a given workspace diretory and add to self.notebooks list
-        """
-        main_path = f'{workspace_path}{p}'
-        dirs = [main_path]
-        while len(dirs) != 0:
-            for r in subprocess.run(['databricks','workspace','list',dirs[0]],capture_output=True,text=True).stdout.splitlines()[1:]:
-                path = ' '.join(r.split()[3:])
-                subpath = path.replace(main_path,'')[1:]
-                if r.split()[1] == 'NOTEBOOK':
-                    extension = ext[r.split()[2]]
-                    url = f'{host_url}/editor/notebooks/{r.split()[0]}'
-                    if not scrap(subpath.split('/')[-1]): self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
-                if r.split()[1] == 'DIRECTORY':
-                    if not scrap(subpath.split('/')[-1]): dirs.append(' '.join(r.split()[2:]))
-            dirs.remove(dirs[0])
-        return self.notebooks
-        
-    
-    def check_support(self,support) -> list:
-        """
-        Return all SQL, Python, and R files from S drive and P drive (if exists) for a given support
-        """
-        m = []
-        for e in ext.values():
-            m += [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*{e}', recursive=True)]
-            zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*.zip', recursive=True)]
-            for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
-            if Path(self.p_drive).exists():
-                m += [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*{e}', recursive=True)]
-                zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*.zip', recursive=True)]
-                for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
-        return m
-    
-    def get_name(self) -> None:
-        try:
-            if self.exist:
-                n = [f.replace('\\','/').split('/')[-1].split('.')[0] for f in glob.glob(f'S:/Client_Projects/{client_code}/{self.code}/*.txt')]
-                n.remove('DO NOT STORE FILES IN THIS DIRECTORY')
-                self.name = n[0]
-            else: self.name = None
-        except:
-            self.name = None
-
-
-#%%Notebook
-class Notebook:
-    def __init__(self,code,path,subpath,extension,url):
-        self.code = code
-        self.path = path
-        self.subpath = subpath
-        self.extension = extension
-        self.url = url
-        self.support = self.subpath.split('/')[0]
-        self.name = self.subpath.split('/')[-1]
-        self.scrap = scrap(self.name)
-        
-        self.source_path = 'MISSING'
-        self.downloaded = False
-        self.qrm = False
-        self.qrm_status = 'Not reviewed'
-    
-    def __str__(self): return self.name
-    
-    def match_source_file(self,source_paths: list) -> bool:
-        """
-        From a list of possible matching files, update self.source_file if names (and extensios) match
-        """
-        for s in source_paths:
-            try:
-                file = s.split('/')[-1].split('.')[0]
-                extension = '.' + s.split('/')[-1].split('.')[1]
-                if file == self.name and check_ext and extension == self.extension:
-                    self.source_path = s
-                    return True
-                elif file == self.name:
-                    self.source_path = s
-                    return True
-                else: continue
-            except: continue
-        return False
-    
-    def download_missing(self) -> None:
-        """
-        Download notebook
-        """
-        try:
-            if create_file_structure: export_dir = f'{export_path}/{self.code}/5-Support_Files/{self.support}/Databricks_Programs'
-            else: export_dir = f'{export_path}'
-            export_dir = export_dir.replace('\\','/')
-            os.makedirs(export_dir,exist_ok=True)
-            if overwrite: subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
-            else: subprocess.run(['databricks','workspace','export-dir',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
-            self.source_path = f'{export_dir}/{self.name}{self.extension}'
-            self.downloaded = True
-        except: print(f'Error downloading {self.name} to {export_dir}')
-
-    
-    def get_lines(self, find: str, start=':', end='\n') -> list:
-        """
-        Read a source file and attempt to return list of any text between two values
-        """
-        try:
-            with open(self.source_path,mode='r',encoding='utf-8') as f:
-                matches = [line for line in f if find.lower() in line.lower()]
-                return [n for n in [m[m.find(start) + len(start):m.find(end)].strip() for m in matches] if n != '']
-            f.close()
-        except:
-            try:
-                with open(self.source_path,mode='r',encoding='ascii') as f:
-                    matches = [line for line in f if find.lower() in line.lower()]
-                    return [n for n in [m[m.find(start) + len(start):m.find(end)].strip() for m in matches] if n != '']
-                f.close()
-            except:
-                if self.source_path == 'MISSING': return ['missing']
-                elif '.zip' in self.source_path: return ['zip']
-                else: return ['failed']
-
-    def get_names(self) -> None:
-        """
-        Define authors and reviewers for a given source file
-        """
-        self.initial_author = self.get_lines('initial author',start=':**')
-        self.initial_checker = self.get_lines('initial checker name')
-        self.addl_auth = self.get_lines('change author')
-        self.addl_check = self.get_lines('name of checker')
-        if len(self.addl_auth) + len(self.addl_check) == 0: self.subsequent = False
-        else: self.subsequent = True
-    
-    def check_qrm(self) -> str:
-        """
-        Verify QRM status by checking authors and reviewers
-        """
-        self.get_names()
-        if self.initial_author == ['failed']: self.qrm_status = 'Failed to read file'
-        elif self.initial_author == ['zip']: self.qrm_status = 'Cannot read compressed file'
-        elif self.initial_author == ['missing']: self.qrm_status = 'File not downloaded'
-        elif len(self.initial_author) == 0: self.qrm_status = 'No author'
-        elif len(self.initial_checker) == 0: self.qrm_status = f'No checker, last author: {self.initial_author[0]}'
-        elif self.subsequent and len(self.addl_auth) > len(self.addl_check): self.qrm_status = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
-        else:
-            a = self.initial_author + self.addl_auth
-            c = self.initial_checker + self.addl_check
-            self.qrm = True
-            self.qrm_status = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
-        return self.qrm_status
-  
-#%%Verify Databricks CLI is configured
-host_info = subprocess.run(['databricks','auth','describe'],capture_output=True,text=True).stdout
-h = host_info.split()[1]
-if h == 'to': close_program(f'Databricks profile is not set up!\nconfig.ini:\t{host_url}\nPlease see ReadMe for more information to set up Databricks CLI.')
-elif h != host_url: close_program(f'Databricks profile does not match config.ini!\nconfig.ini:\t{host_url}\nProfile:\t{h}\nPlease verify Databricks profile or config.ini to re-run.')
-else: print(host_info)
-
-#%%Define project code
-project_codes = []
-p = None
+#%% START
+# get project codes
+project_codes: List[ProjectCode] = []
+p: str | None = None
 print('Enter FULL project codes to check. (Press [ENTER] between each entry. Leave blank and press [ENTER] to continue.)')
 while p != '' or len(project_codes) == 0:
     p = input('>').upper().strip()
-    if p != '': project_codes.append(projectCode(p))
+    if p != '': project_codes.append(ProjectCode(p))
 project_codes = sorted([p for p in project_codes],key=lambda x: x.code)
-print(f'Checking {[p.code for p in project_codes]}')
+print(f'Checking {[p.code for p in project_codes]}\n')
 
-#%%Make workbook
-def create_audit(wb_xlsx) -> None:
-    wb_xlsx.create_sheet('Audit')
-    wb_xlsx.remove(wb_xlsx['Sheet'])
-    ws_xlsx = wb_xlsx['Audit']
-    ws_xlsx.cell(1,1,'Run By:')
-    ws_xlsx.cell(1,2,str(os.environ.get('USERNAME')))
-    ws_xlsx.cell(2,1,'DB_Checker Version:')
-    ws_xlsx.cell(2,2,version)
-    ws_xlsx.cell(3,1,'Workspace path:')
-    ws_xlsx.cell(3,2,workspace_path)
-    ws_xlsx.cell(4,1,'Force same extension:')
-    ws_xlsx.cell(4,2,str(check_ext))
-    ws_xlsx.cell(5,1,'Scrap identifiers:')
-    ws_xlsx.cell(5,2,', '.join(scrap_contains + scrap_startswith + scrap_endswith))
+wb: openpyxl.Workbook | None = None
 
-def format_xlcols(wb):
-    for sheets in wb.worksheets:
-        for col in sheets.columns:
-            max_length = 0
-            column = col[0].column_letter # Get the column name
-            for cell in col:
-                try: # Necessary to avoid error on empty cells
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            adjusted_width = (max_length + 2) * 1.2
-            sheets.column_dimensions[column].width = adjusted_width
+#%% ITERATE
+for project in project_codes:
+    if project.exist:
+        # print project name (or code)
+        print(f'\n{project}')
 
-if one_file:
-    wb = openpyxl.Workbook()
-    create_audit(wb)
-
-#%%         
-for p in project_codes:
-    if p.exist:
-        p.get_name()
-        try: print(f'\n{p.name}')
-        except: print(f'\n{p.code}')
-
-        #Pull Databricks files
-        p.get_files()
+        # get all Databricks notebooks
+        project.get_files()
             
-        if len(p.notebooks) > 0:
-            # Sort notebooks
-            p.notebooks = sorted(p.notebooks,key=lambda x: (x.support, x.name))
+        if len(project.notebooks) > 0:
+            # sort notebook by support and name
+            project.notebooks = sorted(project.notebooks, key=lambda x: (x.support, x.name))
             
-            # Checking network drives
-            for n in p.notebooks:
-                print(f'{p.code.split("-")[-1]}-{n.subpath.replace('-',': ',1)}')
-                n.match_source_file(p.check_support(n.support))
-                if n.source_path == 'MISSING' and download: n.match_source_file([n.download_missing()])
+            # check network drives
+            for n in project.notebooks:
+                print(f'{project.code.split("-")[-1]}-{n.subpath.replace("-",": ",1)}')
+                n.match_source_file(project.check_support(n.support))
+                if n.source_path is None and settings.download: n.download_missing()
                 n.check_qrm()
                 print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')        
             
-            # Project code
-            if not one_file:
-                wb = openpyxl.Workbook()
-                create_audit(wb)
+            # write data to workbook
+            if wb is None: wb = xl.create_workbook()
+            wb.create_sheet(project.code)
+            ws = wb[project.code]
+            xl.write_headers(ws)
+            xl.write_data(ws, project.notebooks)
+
+            # format and save workbook if doing multiple files
+            if not settings.one_file:
+                xl.fit_columns(wb)
+                xlsx_file = f'DB_Check_{project.code}_{time_signature}.xlsx'
+                xl.save(wb, xlsx_file)
+                wb = None
             
-            wb.create_sheet(p.code)
-            ws = wb[p.code]
-            
-            ws.cell(1,1,'Support')
-            ws.cell(1,2,'Notebook Name')
-            ws.cell(1,3,'QRM Status')
-            ws.cell(1,4,'Now downloaded')
-            ws.cell(1,5,'Source File')
-            ws.cell(1,6,'Notebook URL')
-            
-            for i in range(2,len(p.notebooks)+2):
-                ws.cell(i,1,p.notebooks[i-2].support)
-                ws.cell(i,2,p.notebooks[i-2].name)
-                if p.notebooks[i-2].qrm: q = 'OK.'
-                else: q = p.notebooks[i-2].qrm_status
-                ws.cell(i,3,q)
-                ws.cell(i,4,int(p.notebooks[i-2].downloaded))
-                ws.cell(i,5,p.notebooks[i-2].source_path)
-                url_cell = ws.cell(i,6,p.notebooks[i-2].subpath)
-                url_cell.hyperlink = p.notebooks[i-2].url
-                url_cell.font = openpyxl.styles.Font(color="0000FF", underline="single")
-            
-            if not one_file:
-                format_xlcols(wb)
-                xlsx_file = f'DB_Check_{p.code}_{time_signature}.xlsx'
-                wb.save(xlsx_file)
-                print(f'Saved {xlsx_file}')
-            
-            if download and create_file_structure:
-                if Path(f'{export_path}/{p.code}').exists():
-                    with open(f'{export_path}/{p.code}/ReadMe.txt','a') as readme:
+            # update ReadMe for downloads
+            if settings.download and settings.create_file_structure:
+                if Path(f'{settings.export_path}/{project.code}').exists():
+                    with open(f'{settings.export_path}/{project.code}/ReadMe.txt','a') as readme:
                         xlsx_path = os.getcwd()
-                        if one_file: xlsx_path += f'\\DB_Check_{time_signature}.xlsx'
-                        else: xlsx_path = f'\\DB_Check_{p.code}_{time_signature}.xlsx'
-                        readme.write(f'DB_Checker {version} ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {xlsx_path} for more information.\n\n')
+                        if settings.one_file: xlsx_path += f'\\DB_Check_{time_signature}.xlsx'
+                        else: xlsx_path = f'\\DB_Check_{project.code}_{time_signature}.xlsx'
+                        readme.write(f'DB_Checker {settings.version} ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {xlsx_path} for more information.\n\n')
                     readme.close()
 
         else:
-            print(f'There are no Databricks notebooks without {", ".join(scrap_contains + scrap_startswith + scrap_endswith)}.')
+            # no notebooks found
+            print(f'There are no Databricks notebooks without {", ".join(settings.scrap_contains + settings.scrap_startswith + settings.scrap_endswith)}.')
             continue
     else:
-        print(f'\nNo project with code {p.code} found.')
+        # no project code found
+        print(f'\nNo project with code {project.code} found.')
         continue
 
-#%%save wb
-if one_file:
-    format_xlcols(wb)
+# format and save workbook if doing a singular file and open if settings.open_file
+if wb is not None:
+    xl.fit_columns(wb)
     xlsx_file = f'DB_Check_{time_signature}.xlsx'
-    wb.save(xlsx_file)
-    if open_file:
+    xl.save(wb, xlsx_file)
+    if settings.open_file:
         print(f'\nOpening {xlsx_file}...')
         os.startfile(xlsx_file)
 
-#%% End
-close_program(f'Runtime:\t{datetime.now() - start_time}')
+#%% END
+utils.close_program(f'Runtime:\t{datetime.now() - start_time}')

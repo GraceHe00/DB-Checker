@@ -1,6 +1,7 @@
-> Version 1.7.2
-# About
+> Version 1.8.1
+# DB Checker
 Running 'DB_checker.exe' will compare Databricks to SQL, PY, and R files saved on the S: and P: drives and will output an *.xlsx file. This assumes that support folder names are the same in Databricks and the S:/P: drive. It can check through zip folders. This program takes significantly longer larger projects or projects that use a lot of zip folders. This program can run in the background while doing other work. To change settings, use config.ini.<br />
+If you experience errors, please see the [Common Issues](#common-issues) section below. If the issue persists, please submit an [issue](https://github.com/GraceHe00/DB-Checker/issues).<br />
 _This program cannot verify the QRM status of files in zip folders._
 
 # Databricks CLI Configuration
@@ -30,12 +31,10 @@ This file will be automatically created with the default values on the first run
 * `contains`: Any notebook title or directory name containing any value in this comma-delimited list of terms or phases will be skipped (_scrap,clone_)
 * `startswith`: Any notebook title or directory name starting with any value in this comma-delimited list of terms or phrases will be skipped (_xx-,copy of_)
 * `endswith`: Any notebook title or directory name ending with any value in this comma-delimited list of terms or phrases will be skipped (_\_tr,- copy_)
-* `show`: not implemented (_False_)
 ## Download
 * `download`: This is the toggle to download notebooks flagged as missing (_False_)
 * `export_path`: This is the export location (_current working directory_)
 * `create_file_structure`: If true, files will export to a subfolder with a file structure similar to the S drive ; else, files will export to export_path (_True_)
-* `overwrite`: This is a toggle to overwrite existing files in the export location (_False_)
 ## Excel
 * `one_file`: This is a toggle to save log as one file for all project codes. If false, a new Excel workbook will be generated for each project code (_True_)
 * `open_file`: This is a toggle to open the Excel workbook after the program is done running (_True_)
