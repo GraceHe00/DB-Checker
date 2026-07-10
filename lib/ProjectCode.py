@@ -52,14 +52,18 @@ class ProjectCode:
         dirs = [main_path]
         while len(dirs) != 0:
             for r in subprocess.run(['databricks','workspace','list',dirs[0]],capture_output=True,text=True).stdout.splitlines()[1:]:
-                if r.split()[1] == 'DIRECTORY': dirs.append(' '.join(r.split()[2:]))
-                path = ' '.join(r.split()[3:])
-                subpath = path.replace(main_path,'')[1:]
-                if r.split()[1] == 'NOTEBOOK':
-                    if scrap(subpath): continue
-                    extension = settings.ext[r.split()[2]]
-                    url = f'{settings.host_url}/editor/notebooks/{r.split()[0]}'
-                    self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
+                try:
+                    if r.split()[1] == 'DIRECTORY': dirs.append(' '.join(r.split()[2:]))
+                except: pass
+                try: 
+                    path = ' '.join(r.split()[3:])
+                    subpath = path.replace(main_path,'')[1:]
+                    if r.split()[1] == 'NOTEBOOK':
+                        if scrap(subpath): continue
+                        extension = settings.ext[r.split()[2]]
+                        url = f'{settings.host_url}/editor/notebooks/{r.split()[0]}'
+                        self.notebooks.append(Notebook(self.code,path,subpath,extension,url))
+                except: pass
             dirs.remove(dirs[0])
         return self.notebooks
         
