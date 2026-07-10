@@ -52,8 +52,8 @@ class Notebook:
         """
         for s in source_paths:
             try:
-                file = s.split('/')[-1].split('.')[0]
-                extension = '.' + s.split('/')[-1].split('.')[1]
+                filename = s.split('/')[-1]
+                file, extension = os.path.splitext(filename)
                 if file == self.name and settings.check_ext and extension == self.extension:
                     self.source_path = s
                     return True
@@ -95,13 +95,13 @@ class Notebook:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
                 f.close()
-            return [n for n in [re.sub(r'[^[:alpha:]\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
+            return [n for n in [re.sub(r'[^a-zA-Z\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
         except:
             try:
                 with open(self.source_path,mode='r',encoding='ascii') as f:
                     matches = [line for line in f if find.lower() in line.lower()]
                     f.close()
-                return [n for n in [re.sub(r'[^[:alpha:]\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
+                return [n for n in [re.sub(r'[^a-zA-Z\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
             except:
                 if '.zip' in self.source_path: return ['zip']
                 else: return ['failed']

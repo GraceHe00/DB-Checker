@@ -21,7 +21,7 @@ class ProjectCode:
             code (str):                     This is the full project code.
             client_code (str):              This is the client code of this project.
             s_drive (str):                  This is the network S: drive path to the project folder.
-            s_drive (str):                  This is the network P: drive path to the project folder. This may not exist.
+            p_drive (str):                  This is the network P: drive path to the project folder. This may not exist.
             notebooks (List[Notebook]):     This is a list of all Databricks notebooks associated with this project code.
             exist (bool):                   This is whether the project exists and is not archived.
 
@@ -73,7 +73,7 @@ class ProjectCode:
             support (str):  This is the name of the support folder.
         """
         try: return self.supports[support]
-        except:
+        except KeyError:
             m: List[str] = []
             for e in settings.ext.values():
                 m += [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*{e}', recursive=True)]

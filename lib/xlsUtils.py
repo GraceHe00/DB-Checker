@@ -80,7 +80,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
 
     Args:
         ws (openpyxl.Worksheet):    This is the worksheet that will have the new data.
-        notebooks (List[notebook]): List of notebooks whose information will be written
+        notebooks (List[Notebook]): List of notebooks whose information will be written
     """
     # loop through cells, skip headers
     for i in range(2, len(notebooks)+2):
