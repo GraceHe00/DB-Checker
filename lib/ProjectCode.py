@@ -41,7 +41,7 @@ class ProjectCode:
     
     def __str__(self) -> str:
         self.get_name()
-        if self.name is None: return self.code
+        if self.name == None: return self.code
         else: return self.name
     
     def get_files(self) -> List[Notebook]:

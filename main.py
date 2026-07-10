@@ -74,7 +74,7 @@ for project in project_codes:
                 print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')        
             
             # write data to workbook
-            if wb is None: wb = xl.create_workbook()
+            if wb == None: wb = xl.create_workbook()
             wb.create_sheet(project.code)
             ws = wb[project.code]
             xl.write_headers(ws)
