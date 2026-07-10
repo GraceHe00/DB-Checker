@@ -3,7 +3,7 @@ from typing import List
 
 def init() -> None:
     global version
-    version = '1.8.0'
+    version = '1.8.1'
         
     global ext
     ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
