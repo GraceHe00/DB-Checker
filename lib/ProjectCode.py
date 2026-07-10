@@ -78,11 +78,13 @@ class ProjectCode:
             for e in settings.ext.values():
                 m += [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*{e}', recursive=True)]
                 zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*.zip', recursive=True)]
-                for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
+                for zip_file in zip_files:
+                    with zipfile.ZipFile(zip_file, 'r') as zf: m += [f'{zip_file}/{z.filename}' for z in zf.infolist() if z.filename.endswith(e)]
                 if Path(self.p_drive).exists():
                     m += [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*{e}', recursive=True)]
                     zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*.zip', recursive=True)]
-                    for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
+                    for zip_file in zip_files:
+                        with zipfile.ZipFile(zip_file, 'r') as zf: m += [f'{zip_file}/{z.filename}' for z in zf.infolist() if z.filename.endswith(e)]
             self.supports[support] = m
             return m
     
