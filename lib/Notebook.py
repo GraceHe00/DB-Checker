@@ -95,13 +95,13 @@ class Notebook:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
                 f.close()
-            return [n for n in [re.sub(r'[^a-zA-z\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
+            return [n for n in [re.sub(r'[^[:alpha:]\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
         except:
             try:
                 with open(self.source_path,mode='r',encoding='ascii') as f:
                     matches = [line for line in f if find.lower() in line.lower()]
                     f.close()
-                return [n for n in [re.sub(r'[^a-zA-z\s]','',m[m.find(start) + len(start):m.find(end)]) for m in matches] if n != '']
+                return [n for n in [re.sub(r'[^[:alpha:]\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
             except:
                 if '.zip' in self.source_path: return ['zip']
                 else: return ['failed']
