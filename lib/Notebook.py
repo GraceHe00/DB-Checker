@@ -95,13 +95,19 @@ class Notebook:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
                 f.close()
-            return [n for n in [re.sub(r'[^a-zA-Z\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
+            matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
+            matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
+            matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
+            return [n for n in matches_no_special if n != '']
         except:
             try:
                 with open(self.source_path,mode='r',encoding='ascii') as f:
                     matches = [line for line in f if find.lower() in line.lower()]
                     f.close()
-                return [n for n in [re.sub(r'[^a-zA-Z\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
+                matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
+                matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
+                matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
+                return [n for n in matches_no_special if n != '']
             except:
                 if '.zip' in self.source_path: return ['zip']
                 else: return ['failed']
