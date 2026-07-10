@@ -35,7 +35,6 @@ def setup_config() -> None:
         if not os.path.isfile('config.ini'):
             with open('config.ini', 'w') as configfile:
                 config.write(configfile)
-                configfile.close()
         config.read('config.ini')
 
         settings.host_url = config.get('General','host_URL')
