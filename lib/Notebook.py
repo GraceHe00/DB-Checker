@@ -1,6 +1,7 @@
 # libraries
 import os
 from . import settings
+import re
 import subprocess
 
 # classes
@@ -93,14 +94,14 @@ class Notebook:
         try:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
-                return [n for n in [m[m.find(start) + len(start):m.find(end)].strip() for m in matches] if n != '']
-            f.close()
+                f.close()
+            return [n for n in [re.sub(r'[^a-zA-z\s]','',m[m.find(start) + len(start):m.find(end)]).strip() for m in matches] if n != '']
         except:
             try:
                 with open(self.source_path,mode='r',encoding='ascii') as f:
                     matches = [line for line in f if find.lower() in line.lower()]
-                    return [n for n in [m[m.find(start) + len(start):m.find(end)].strip() for m in matches] if n != '']
-                f.close()
+                    f.close()
+                return [n for n in [re.sub(r'[^a-zA-z\s]','',m[m.find(start) + len(start):m.find(end)]) for m in matches] if n != '']
             except:
                 if '.zip' in self.source_path: return ['zip']
                 else: return ['failed']
@@ -109,10 +110,11 @@ class Notebook:
         """
         Define authors and reviewers for a given source file
         """
-        self.initial_author = self.get_lines('initial author',start=':**')
+        self.initial_author = self.get_lines('initial author')
         self.initial_checker = self.get_lines('initial checker name')
         self.addl_auth = self.get_lines('change author')
         self.addl_check = self.get_lines('name of checker')
+
         if len(self.addl_auth) + len(self.addl_check) == 0: self.subsequent = False
         else: self.subsequent = True
     
