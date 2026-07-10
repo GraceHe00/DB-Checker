@@ -90,7 +90,7 @@ class Notebook:
             start (str):    
             end (str):      
         """
-        if self.source_path == None: return ['missing']
+        if self.source_path is None: return ['missing']
         try:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
