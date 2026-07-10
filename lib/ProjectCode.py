@@ -18,12 +18,15 @@ class ProjectCode:
         This represent a project.
 
         Args:
-            code (str):                 This is the full project code.
-            client_code (str):          This is the client code of this project.
-            s_drive (str):              This is the network S: drive path to the project folder.
-            s_drive (str):              This is the network P: drive path to the project folder. This may not exist.
-            notebooks (List[Notebook]): This is a list of all Databricks notebooks associated with this project code.
-            exist (bool):               This is whether the project exists and is not archived.
+            code (str):                     This is the full project code.
+            client_code (str):              This is the client code of this project.
+            s_drive (str):                  This is the network S: drive path to the project folder.
+            s_drive (str):                  This is the network P: drive path to the project folder. This may not exist.
+            notebooks (List[Notebook]):     This is a list of all Databricks notebooks associated with this project code.
+            exist (bool):                   This is whether the project exists and is not archived.
+
+            name (str):                     This is the name of the project code (if it exists).
+            supports (dict[str,List[str]]): This is a dictionary of support and its code support files.
         """
         self.code = code
 
@@ -34,6 +37,7 @@ class ProjectCode:
         self.exist = Path(f'S:/Client_Projects/{self.client_code}/{self.code}').exists()
 
         self.name: str | None = None
+        self.supports: dict[str,List[str]] = {}
     
     def __str__(self) -> str:
         self.get_name()
@@ -68,16 +72,19 @@ class ProjectCode:
         Args:
             support (str):  This is the name of the support folder.
         """
-        m: List[str] = []
-        for e in settings.ext.values():
-            m += [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*{e}', recursive=True)]
-            zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*.zip', recursive=True)]
-            for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
-            if Path(self.p_drive).exists():
-                m += [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*{e}', recursive=True)]
-                zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*.zip', recursive=True)]
+        try: return self.supports[support]
+        except:
+            m: List[str] = []
+            for e in settings.ext.values():
+                m += [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*{e}', recursive=True)]
+                zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.s_drive}/{support}/**/*.zip', recursive=True)]
                 for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
-        return m
+                if Path(self.p_drive).exists():
+                    m += [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*{e}', recursive=True)]
+                    zip_files = [f.replace('\\','/') for f in glob.glob(f'{self.p_drive}/{support}/**/*.zip', recursive=True)]
+                    for zip_file in zip_files: m += [f'{zip_file}/{z.filename}' for z in zipfile.ZipFile(zip_file, 'r').infolist() if z.filename.endswith(e)]
+            self.supports[support] = m
+            return m
     
     def get_name(self) -> None:
         """
