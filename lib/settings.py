@@ -1,4 +1,5 @@
 # classes
+from halo import Halo
 from typing import List
 
 def init() -> None:
@@ -7,6 +8,9 @@ def init() -> None:
         
     global ext
     ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
+
+    global spinner
+    spinner = Halo()
 
     # defined in config.ini file
     global host_url
