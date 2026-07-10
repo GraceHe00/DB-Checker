@@ -1,4 +1,4 @@
-> Version 1.8.1
+> Version 1.8.2
 # DB Checker
 Running 'DB_checker.exe' will compare Databricks to SQL, PY, and R files saved on the S: and P: drives and will output an *.xlsx file. This assumes that support folder names are the same in Databricks and the S:/P: drive. It can check through zip folders. This program takes significantly longer larger projects or projects that use a lot of zip folders. This program can run in the background while doing other work. To change settings, use config.ini.<br />
 If you experience errors, please see the [Common Issues](#common-issues) section below. If the issue persists, please submit an [issue](https://github.com/GraceHe00/DB-Checker/issues).<br />

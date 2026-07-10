@@ -1,12 +1,16 @@
 # classes
+from halo import Halo # pyright: ignore[reportMissingTypeStubs]
 from typing import List
 
 def init() -> None:
     global version
-    version = '1.8.1'
+    version = '1.8.2'
         
     global ext
     ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
+
+    global spinner
+    spinner = Halo()
 
     # defined in config.ini file
     global host_url

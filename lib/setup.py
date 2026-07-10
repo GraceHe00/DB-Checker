@@ -9,8 +9,8 @@ def setup_config() -> None:
     """
     setup = False
     while not setup:
-        config = configparser.ConfigParser()
 
+        config = configparser.ConfigParser()
         config['General'] = {
             'host_URL':'https://adb-7405618167364399.19.azuredatabricks.net',
             'workspace_path':'/Workspace/Shared/ILM_Project_Codes/',
