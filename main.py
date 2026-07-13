@@ -6,6 +6,7 @@ import lib.databricksUtils as db
 import openpyxl
 import os
 import lib.settings as settings
+import lib.setup as setup
 import lib.utils as utils
 import lib.xlsUtils as xl
 
@@ -14,9 +15,6 @@ from datetime import datetime
 from typing import List
 from pathlib import Path
 from lib.ProjectCode import ProjectCode
-
-# methods
-from lib.setup import setup_config
 
 #%% INITIALIZATION
 # define start
@@ -28,7 +26,8 @@ settings.init()
 print(f'DB Checker                            ')
 print(f'v{settings.version}')
 
-setup_config()
+setup.check_version('GraceHe00','DB-Checker')
+setup.setup_config()
 
 # Databricks CLI verification
 cli_version = db.version()

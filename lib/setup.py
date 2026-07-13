@@ -1,7 +1,27 @@
 # libraries
 import configparser
 import os
+import requests
 from . import settings
+
+def check_version(owner: str, repo: str, timeout: int = 10) -> None:
+    """
+    Checks if the version running is the latest version on GitHub
+
+    Args:
+        owner (str):    Username of GitHub repository owner
+        repo (str):     Name of GitHub repository
+        timeout (int):  Seconds until request timeout (default = 10)
+    """
+    try:
+        response = requests.get(f'https://api.github.com/repos/{owner}/{repo}/releases/latest', timeout=timeout)
+        response.raise_for_status()
+        data = response.json()
+        latest_version = data.get('tag_name').replace('v','')
+        if latest_version > settings.version:
+            print(f'WARNING! This version is out of date.\nPlease go to:\nhttps://github.com/{owner}/{repo}/releases/latest\nfor the latest release.')
+            input('Press [ENTER] to continue anyways...')
+    except: pass
 
 def setup_config() -> None:
     """
