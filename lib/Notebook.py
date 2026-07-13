@@ -130,10 +130,10 @@ class Notebook:
         """
         Define authors and reviewers for a given source file
         """
-        self.initial_author = self.get_lines('author', ignore='initial')
-        self.initial_checker = self.get_lines('checker', ignore='initial')
-        self.addl_auth = self.get_lines('author')
-        self.addl_check = self.get_lines('checker')
+        self.initial_author = self.get_lines('author')
+        self.initial_checker = self.get_lines('checker')
+        self.addl_auth = self.get_lines('author', ignore='initial')
+        self.addl_check = self.get_lines('checker', ignore='initial')
 
         if len(self.addl_auth) + len(self.addl_check) == 0: self.subsequent = False
         else: self.subsequent = True
