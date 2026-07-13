@@ -5,6 +5,14 @@ import requests
 from . import settings
 
 def check_version(owner: str, repo: str, timeout: int = 10) -> None:
+    """
+    Checks if the version running is the latest version on GitHub
+
+    Args:
+        owner (str):    Username of GitHub repository owner
+        repo (str):     Name of GitHub repository
+        timeout (int):  Seconds until rquest timeout (default = 10)
+    """
     try:
         response = requests.get(f'https://api.github.com/repos/{owner}/{repo}/releases/latest', timeout=timeout)
         response.raise_for_status()
