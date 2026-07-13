@@ -16,6 +16,7 @@ from pathlib import Path
 from lib.ProjectCode import ProjectCode
 
 # methods
+from lib.setup import check_version
 from lib.setup import setup_config
 
 #%% INITIALIZATION
@@ -28,6 +29,7 @@ settings.init()
 print(f'DB Checker                            ')
 print(f'v{settings.version}')
 
+check_version('GraceHe00','DB-Checker')
 setup_config()
 
 # Databricks CLI verification
