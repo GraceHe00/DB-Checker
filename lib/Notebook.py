@@ -82,20 +82,22 @@ class Notebook:
             self.downloaded = False
             return f'Error downloading {self.name} to {export_dir}'
 
-    def get_lines(self, find: str, start: str = ':', end: str = '\n') -> List[str]:
+    def get_lines(self, find: str, start: str = ':', end: str = '\n', ignore: str | None = None) -> List[str]:
         """
         Read a source file and attempt to return list of any text between two values
 
         Args:
-            find (str):     
-            start (str):    
-            end (str):      
+            find (str):             string in a line that is trying to be found
+            start (str):            return after this character (default: ':')
+            end (str):              end after this charcter (default: '\n')
+            ignore (str | None):    ignore a line if it contains this string, even if it is a match (default: None)
         """
         if self.source_path is None: return ['missing']
         try:
             with open(self.source_path,mode='r',encoding='utf-8') as f:
                 matches = [line for line in f if find.lower() in line.lower()]
                 f.close()
+            if ignore != None: matches = [m for m in matches if ignore.lower() not in m.lower()]
             matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
             matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
             matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
@@ -105,6 +107,7 @@ class Notebook:
                 with open(self.source_path,mode='r',encoding='ascii') as f:
                     matches = [line for line in f if find.lower() in line.lower()]
                     f.close()
+                if ignore != None: matches = [m for m in matches if ignore.lower() not in m.lower()]
                 matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
                 matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
                 matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
@@ -117,10 +120,10 @@ class Notebook:
         """
         Define authors and reviewers for a given source file
         """
-        self.initial_author = self.get_lines('initial author')
-        self.initial_checker = self.get_lines('initial checker name')
-        self.addl_auth = self.get_lines('change author')
-        self.addl_check = self.get_lines('name of checker')
+        self.initial_author = self.get_lines('author', ignore='initial')
+        self.initial_checker = self.get_lines('checker', ignore='initial')
+        self.addl_auth = self.get_lines('author')
+        self.addl_check = self.get_lines('checker')
 
         if len(self.addl_auth) + len(self.addl_check) == 0: self.subsequent = False
         else: self.subsequent = True
