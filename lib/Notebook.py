@@ -94,41 +94,36 @@ class Notebook:
             ignore (str | None):    ignore a line if it contains this string, even if it is a match (default: None)
         """
         if self.source_path is None: return ['missing']
+        matches: List[str] = []
         try:
-            with open(self.source_path,mode='r',encoding='utf-8') as f:
-                matches = [line for line in f if find.lower() in line.lower()]
-                f.close()
-            if ignore != None: matches = [m for m in matches if ignore.lower() not in m.lower()]
+            try:
+                with open(self.source_path,mode='r',encoding='utf-8') as f:
+                    matches = [line for line in f if find.lower() in line.lower()]
+                    f.close()
+            except EncodingWarning:
+                with open(self.source_path,mode='r',encoding='ascii') as f:
+                    matches = [line for line in f if find.lower() in line.lower()]
+                    f.close()
+            except:
+                try:
+                    if '.zip' in self.source_path:
+                        z = self.source_path.split('.zip')
+                        with ZipFile(z[0] + '.zip','r') as zd:
+                            try:
+                                with zd.open(z[1][1:],'r') as zf:
+                                    content = zf.read().decode('utf-8').split('\n')
+                                    zf.close()
+                            except EncodingWarning:
+                                with zd.open(z[1][1:],'r') as zf:
+                                    content = zf.read().decode('ascii').split('\n')
+                                    zf.close()
+                        matches = [line for line in content if find.lower() in line.lower()]
+                except: return ['zip']
             matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
             matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
             matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
             return [n for n in matches_no_special if n != '']
-        except:
-            try:
-                with open(self.source_path,mode='r',encoding='ascii') as f:
-                    matches = [line for line in f if find.lower() in line.lower()]
-                    f.close()
-                if ignore != None: matches = [m for m in matches if ignore.lower() not in m.lower()]
-                matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
-                matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
-                matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
-                return [n for n in matches_no_special if n != '']
-            except:
-                if '.zip' in self.source_path:
-                    try:
-                        z = self.source_path.split('.zip')
-                        with ZipFile(z[0] + '.zip','r') as zd:
-                            with zd.open(z[1][1:],'r') as zf:
-                                content = zf.read().decode('utf-8').split('\n')
-                                zf.close()
-                            zd.close()
-                        matches = [line for line in content if find.lower() in line.lower()]
-                        matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
-                        matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
-                        matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
-                        return [n for n in matches_no_special if n != '']
-                    except: return ['zip']
-                else: return ['failed']
+        except: return ['failed']
 
     def get_names(self) -> None:
         """
