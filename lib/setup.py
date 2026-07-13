@@ -11,7 +11,7 @@ def check_version(owner: str, repo: str, timeout: int = 10) -> None:
     Args:
         owner (str):    Username of GitHub repository owner
         repo (str):     Name of GitHub repository
-        timeout (int):  Seconds until rquest timeout (default = 10)
+        timeout (int):  Seconds until request timeout (default = 10)
     """
     try:
         response = requests.get(f'https://api.github.com/repos/{owner}/{repo}/releases/latest', timeout=timeout)

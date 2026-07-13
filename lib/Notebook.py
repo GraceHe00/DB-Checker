@@ -90,7 +90,7 @@ class Notebook:
         Args:
             find (str):             string in a line that is trying to be found
             start (str):            return after this character (default: ':')
-            end (str):              end after this charcter (default: '\n')
+            end (str):              end after this character (default: '\n')
             ignore (str | None):    ignore a line if it contains this string, even if it is a match (default: None)
         """
         if self.source_path is None: return ['missing']
@@ -119,6 +119,7 @@ class Notebook:
                                     zf.close()
                         matches = [line for line in content if find.lower() in line.lower()]
                 except: return ['zip']
+            if ignore != None: matches = [m for m in matches if ignore.lower() in m.lower()]
             matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
             matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
             matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
