@@ -3,3 +3,4 @@ config.ini
 *.exe
 *.sql
 lib/__pycache__
+*.py
