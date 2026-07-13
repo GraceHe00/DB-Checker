@@ -6,6 +6,7 @@ import subprocess
 
 # classes
 from typing import List
+from zipfile import ZipFile
 
 # methods
 from .utils import scrap
@@ -110,7 +111,20 @@ class Notebook:
                 matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
                 return [n for n in matches_no_special if n != '']
             except:
-                if '.zip' in self.source_path: return ['zip']
+                if '.zip' in self.source_path:
+                    try:
+                        z = self.source_path.split('.zip')
+                        with ZipFile(z[0] + '.zip','r') as zd:
+                            with zd.open(z[1][1:],'r') as zf:
+                                content = zf.read().decode('utf-8').split('\n')
+                                zf.close()
+                            zd.close()
+                        matches = [line for line in content if find.lower() in line.lower()]
+                        matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
+                        matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
+                        matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
+                        return [n for n in matches_no_special if n != '']
+                    except: return ['zip']
                 else: return ['failed']
 
     def get_names(self) -> None:
