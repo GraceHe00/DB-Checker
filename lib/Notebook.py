@@ -169,16 +169,12 @@ class Notebook:
             a = self.initial_author + self.addl_auth
             c = self.initial_checker + self.addl_check
             self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
-        if self.qrm is not None and not self.qrm: self.qrm = self.signatures[:2] == 'No'
         
         settings.spinner.stop()
     
-    def __check_similarity__(self, threshold: float = 1) -> None:
+    def __check_similarity__(self) -> None:
         """
         Get normalized similarity based on Damerau-Levenshtein distance
-
-        Args:
-            threshold (float):  Minimum amount of match to be considered the same
         """
         if self.local is None: return None
         settings.spinner.start(f'Comparing {self.name}...') # pyright: ignore[reportUnknownMemberType]
@@ -186,11 +182,11 @@ class Notebook:
         except: return None
         local_nsp = re.sub(r'\s','',self.local)
         origin_nsp = re.sub(r'\s','',origin)
-        self.similarity = 1 - normalized_damerau_levenshtein_distance(local_nsp, origin_nsp)
-        if self.qrm is not None and not self.qrm: self.qrm = self.similarity >= threshold
+        if settings.levenshtein: self.similarity = 1 - normalized_damerau_levenshtein_distance(local_nsp, origin_nsp)
+        else: self.similarity = int(local_nsp == origin_nsp)
         settings.spinner.stop()
     
-    def check_qrm(self, check_similarity: bool = True, check_signatures: bool = True, ) -> bool | None:
+    def check_qrm(self, check_similarity: bool = True, check_signatures: bool = True) -> bool | None:
         """
         Verify QRM status by checking authors and reviewers
         """
@@ -203,6 +199,12 @@ class Notebook:
             self.qrm = False
             return None
         else:
-            if check_similarity: self.__check_similarity__()
-            if check_signatures: self.__check_signatures__()
+            if check_similarity:
+                self.__check_similarity__()
+                if self.qrm is not None and not self.qrm and self.similarity is not None:
+                    if settings.levenshtein: self.qrm = self.similarity >= settings.threshold
+                    else: self.qrm = bool(self.similarity)
+            if check_signatures:
+                self.__check_signatures__()
+                if self.qrm is not None and not self.qrm: self.qrm = self.signatures[:2] == 'No'
         return self.qrm

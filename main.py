@@ -71,7 +71,8 @@ for project in project_codes:
                 if n.source_path is None and settings.download: n.download()
                 n.check_qrm(check_similarity=settings.check_similarity, check_signatures=settings.check_signatures)
                 print(f'\tPath:\t{n.source_path}')        
-                if settings.check_similarity and n.similarity is not None: print(f'\tMatch:\t{round(n.similarity * 100, 2)}%')
+                if settings.levenshtein and n.similarity is not None: print(f'\tMatch:\t{round(n.similarity * 100, 2)}%')
+                elif settings.check_similarity and n.similarity is not None: print(f'\tMatch:\t{bool(n.similarity)}')
                 if settings.check_signatures: print(f'\tQRM:\t{n.signatures}')
             
             # write data to workbook

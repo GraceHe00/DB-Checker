@@ -24,6 +24,7 @@ def init() -> None:
     global one_file
     global open_file
     global check_similarity
+    global levelstein
     global threshold
     global check_signatures
     global scrap_contains
@@ -41,6 +42,7 @@ create_file_structure: bool
 one_file: bool
 open_file: bool
 check_similarity: bool
+levenshtein: bool
 threshold: float
 check_signatures: bool
 scrap_contains: List[str]

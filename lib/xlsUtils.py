@@ -96,10 +96,13 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
         if nb.qrm is None: qrm = 'REVIEW REQUIRED'
         else: qrm = 'ISSUE'
 
-        if not settings.check_similarity: s = 'N/A'
-        elif nb.source_path is None: s = ''
+        if not settings.check_similarity and not settings.levenshtein: s = 'N/A'
+        elif nb.source_path is None: s = 'N/A'
         elif nb.local is None or nb.similarity is None: s = 'Failed to comapre file'
-        else: s = str(round(nb.similarity * 100,2)) + '%'
+        elif settings.levenshtein: s = str(round(nb.similarity * 100,2)) + '%'
+        else:
+            if bool(nb.similarity): s = 'Exact match'
+            else: s = 'Not an exact match'
         
         if not settings.download: d = 'N/A'
         elif nb.downloaded is None: d = 'N/A'

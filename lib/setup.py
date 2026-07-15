@@ -53,6 +53,7 @@ def setup_config() -> None:
         }
         config['QRM'] = {
             'check_similarity':'False',
+            'levenshtein': 'False',
             'threshold':'100',
             'check_signatures':'True'
         }
@@ -73,7 +74,8 @@ def setup_config() -> None:
         settings.one_file = config.getboolean('Excel','one_file')
         settings.open_file = config.getboolean('Excel','open_file')
         settings.check_similarity = config.getboolean('QRM','check_similarity')
-        if settings.check_similarity:
+        settings.levenshtein = config.getboolean('QRM','levenshtein')
+        if settings.levenshtein:
             try:
                 threshold_int = int(config.get('QRM','threshold'))
                 if threshold_int < 0 or threshold_int > 100:
@@ -98,8 +100,9 @@ def setup_config() -> None:
         if settings.download:
             print(f'Download path:\t\t{settings.export_path}')
             print(f'Create file structure:\t{settings.create_file_structure}')
-        print(f'Check differences:\t{settings.check_similarity}')
-        if settings.check_similarity: print(f'Similarity threshold:\t{settings.threshold}')
+        if settings.levenshtein: print(f'Check differences:\tLevenshtein')
+        else: print(f'Check differences:\t{settings.check_similarity}')
+        if settings.levenshtein: print(f'Similarity threshold:\t{settings.threshold}')
         print(f'Check signatures:\t{settings.check_signatures}')
         print('\nAre these configuration settings correct? [Y] Yes or [N] No')
         valid_answer = False
