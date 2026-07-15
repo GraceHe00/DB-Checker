@@ -198,11 +198,11 @@ class Notebook:
             if self.local is None: return None
             if check_similarity:
                 self.__check_similarity__()
-                if self.qrm and self.similarity is not None:
+                if (self.qrm or self.qrm is None)and self.similarity is not None:
                     if settings.levenshtein: self.qrm = self.similarity >= settings.threshold
                     else: self.qrm = bool(self.similarity)
             if check_signatures:
                 self.__check_signatures__()
-                if self.qrm: self.qrm = self.signatures[:2] == 'No'
+                if self.qrm or self.qrm is None: self.qrm = self.signatures[:2] == 'OK'
             return self.qrm
         else: return None
