@@ -148,6 +148,8 @@ class Notebook:
         """
         Define authors and reviewers for a given source file
         """
+        if self.local is None: return None
+        
         self.initial_author = self.__parse_lines__('author')
         self.initial_checker = self.__parse_lines__('checker')
         self.addl_auth = self.__parse_lines__('author', ignore='initial')
