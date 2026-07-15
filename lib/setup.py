@@ -87,6 +87,9 @@ def setup_config() -> None:
         if settings.download:
             print(f'Download path:\t\t{settings.export_path}')
             print(f'Create file structure:\t{settings.create_file_structure}')
+        print(f'Check differences:\t{settings.check_similarity}')
+        if settings.check_similarity: print(f'Similarity threshold:\t{settings.threshold}')
+        print(f'Check signatures:\t{settings.check_signatures}')
         print('\nAre these configuration settings correct? [Y] Yes or [N] No')
         valid_answer = False
         while not valid_answer:
