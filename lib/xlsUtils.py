@@ -71,7 +71,8 @@ def write_headers(ws: Worksheet) -> None:
         'Support',
         'Notebook Name',
         'QRM Status',
-        'QRM Detail',
+        'Similarity',
+        'Signatures',
         'Downloaded by DB Checker',
         'Source File',
         'Notebook URL'
@@ -92,7 +93,16 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
 
         if nb.qrm: qrm = 'OK.'
         elif nb.source_path is None: qrm = 'MISSING'
+        elif nb.qrm is None: qrm = 'REVIEW REQUIRED'
         else: qrm = 'ISSUE'
+
+        if not settings.check_similarity and not settings.levenshtein: s = 'N/A'
+        elif nb.source_path is None: s = 'N/A'
+        elif nb.local is None or nb.similarity is None: s = 'Failed to compare file'
+        elif settings.levenshtein: s = str(round(nb.similarity * 100,2)) + '%'
+        else:
+            if bool(nb.similarity): s = 'Exact match'
+            else: s = 'Not an exact match'
         
         if not settings.download: d = 'N/A'
         elif nb.downloaded is None: d = 'N/A'
@@ -106,7 +116,8 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
             nb.support,
             nb.name,
             qrm,
-            nb.qrm_status,
+            s,
+            nb.signatures,
             d,
             source_path,
             nb.url

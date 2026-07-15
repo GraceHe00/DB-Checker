@@ -4,7 +4,7 @@ from typing import List
 
 def init() -> None:
     global version
-    version = '1.8.3'
+    version = '1.9.0'
         
     global ext
     ext = {'SQL':'.sql','PYTHON':'.py','R':'.r'}
@@ -23,6 +23,10 @@ def init() -> None:
     global create_file_structure
     global one_file
     global open_file
+    global check_similarity
+    global levenshtein
+    global threshold
+    global check_signatures
     global scrap_contains
     global scrap_startswith
     global scrap_endswith
@@ -37,6 +41,10 @@ export_path: str
 create_file_structure: bool
 one_file: bool
 open_file: bool
+check_similarity: bool
+levenshtein: bool
+threshold: float
+check_signatures: bool
 scrap_contains: List[str]
 scrap_startswith: List[str]
 scrap_endswith: List[str]
