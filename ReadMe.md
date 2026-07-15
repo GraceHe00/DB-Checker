@@ -8,9 +8,9 @@ This program indexes the Databricks workspace and network drives to:
 
 This assumes that support folder names are the same in Databricks, the S:, and P: drive. Also, while this can check through files in compressed zip folders, it will take significantly longer. This program can be run in the background while doing other work. It is advisable to run in a remote desktop to avoid accidentally exiting the program.
 
-In order to run this program, pleasse see the [latest release](https://github.com/GraceHe00/DB-Checker/releases/latest) and download the `DB Checker.exe`. This is entirely run in Python, so you may also clone their repo. This program requires that the Databricks CLI is set up ([directions here](https://github.com/GraceHe00/DB-Checker/blob/20260715/lib/assets/docs/DBCLI.md)).
+In order to run this program, please see the [latest release](https://github.com/GraceHe00/DB-Checker/releases/latest) and download the `DB Checker.exe`. This is entirely run in Python, so you may also clone their repo. This program requires that the Databricks CLI is set up ([directions here](/lib/assets/docs/DBCLI.md)).
 
-Additional options may be changed in config.ini ([additional information here](https://github.com/GraceHe00/DB-Checker/blob/20260715/lib/assets/docs/config.md)).
+Additional options may be changed in config.ini ([additional information here](/lib/assets/docs/config.md)).
 
 If you experience errors, please see the __Common Issues__ section below. If the issue persists, please submit an [issue](https://github.com/GraceHe00/DB-Checker/issues).<br />
 

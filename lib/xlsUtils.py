@@ -98,7 +98,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
 
         if not settings.check_similarity and not settings.levenshtein: s = 'N/A'
         elif nb.source_path is None: s = 'N/A'
-        elif nb.local is None or nb.similarity is None: s = 'Failed to comapre file'
+        elif nb.local is None or nb.similarity is None: s = 'Failed to compare file'
         elif settings.levenshtein: s = str(round(nb.similarity * 100,2)) + '%'
         else:
             if bool(nb.similarity): s = 'Exact match'

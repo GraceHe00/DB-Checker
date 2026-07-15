@@ -24,7 +24,7 @@ def init() -> None:
     global one_file
     global open_file
     global check_similarity
-    global levelstein
+    global levenshtein
     global threshold
     global check_signatures
     global scrap_contains

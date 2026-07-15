@@ -1,12 +1,12 @@
 # Configuration in config.ini
 This file will be automatically created with the default values on the first run of DB_checker.exe if it does not exist. If any variables are omitted or removed from the configuration file, the default values will be used for fallback. (_Default values in italics_)
 ## General
-* `host_url`: This is you Databricks host URL; typically the first part of any DB notebook URL and was used to authenticate Databricks CLI (_https://adb-7405618167364399.19.azuredatabricks.net_)
+* `host_url`: This is your Databricks host URL; typically the first part of any DB notebook URL and was used to authenticate Databricks CLI (_https://adb-7405618167364399.19.azuredatabricks.net_)
 * `workspace_path`: This is the Databricks workspace path that contains the project folders (_/Workspace/Shared/ILM_Project_Codes/_)
 * `client_code`: This is the client code (_0032ILM_)
 * `check_extensions`: This is the toggle to force matching extensions (most of the time notebooks are downloaded as SQL but DB might recognize the notebook as a PY file) (_False_)
 ## Scrap
-* `contains`: Any notebook title or directory name containing any value in this comma-delimited list of terms or phases will be skipped (_scrap,clone_)
+* `contains`: Any notebook title or directory name containing any value in this comma-delimited list of terms or phrases will be skipped (_scrap,clone_)
 * `startswith`: Any notebook title or directory name starting with any value in this comma-delimited list of terms or phrases will be skipped (_xx-,copy of_)
 * `endswith`: Any notebook title or directory name ending with any value in this comma-delimited list of terms or phrases will be skipped (_\_tr,- copy_)
 ## Download

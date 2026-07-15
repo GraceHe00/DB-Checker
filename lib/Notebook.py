@@ -135,7 +135,7 @@ class Notebook:
         if self.local is None: return []
         content = self.local.split('\n')
         matches = [c for c in content if find.lower() in c.lower()]
-        if ignore != None: matches = [m for m in matches if ignore.lower() in m.lower()]
+        if ignore != None: matches = [m for m in matches if ignore.lower() not in m.lower()]
         matches_trimmed: List[str] = []
         for m in matches:
             if start is None or m.find(start) == -1: a = 0
@@ -177,9 +177,9 @@ class Notebook:
         Get normalized similarity based on Damerau-Levenshtein distance
         """
         if self.local is None: return None
-        settings.spinner.start(f'Comparing {self.name}...') # pyright: ignore[reportUnknownMemberType]
         try: origin = subprocess.run(['databricks','workspace','export',self.path], capture_output=True, text=True, encoding='utf-8').stdout
         except: return None
+        settings.spinner.start(f'Comparing {self.name}...') # pyright: ignore[reportUnknownMemberType]
         local_nsp = re.sub(r'\s','',self.local)
         origin_nsp = re.sub(r'\s','',origin)
         if settings.levenshtein: self.similarity = 1 - normalized_damerau_levenshtein_distance(local_nsp, origin_nsp)
