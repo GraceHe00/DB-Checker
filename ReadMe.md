@@ -37,6 +37,11 @@ This file will be automatically created with the default values on the first run
 * `one_file`: This is a toggle to save log as one file for all project codes. If false, a new Excel workbook will be generated for each project code (_True_)
 * `open_file`: This is a toggle to open the Excel workbook after the program is done running (_True_)
   * Note: This only works if one_file is selected.
+## QRM
+* `check_similarity`: This will check the [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity. (_False_)
+* `threshold`: This is the minimum percent of similarity that a notebook needs to be considered OK. (_100_)
+  * Note: This only works if check_similarity is selected.
+* `check_signatures`: This will check for author and checker signatures. (_True_)
 
 # Common Issues
 - Databricks CLI not configured correctly.
@@ -47,3 +52,5 @@ This file will be automatically created with the default values on the first run
   - Verify that those files/folders in question do not contain a scrap indicator as a substring.
 - The program stopped.
   - Try pressing the down arrow key a few times.
+- Notebooks are being flagged as missing when they aren't actually missing.
+  - Verify the spelling of the support folders including any prefixes.
