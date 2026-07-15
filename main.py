@@ -69,9 +69,9 @@ for project in project_codes:
                 print(f'{project.code.split("-")[-1]}-{n.subpath.replace("-",": ",1)}')
                 n.match_source_file(project.check_support(n.support))
                 if n.source_path is None and settings.download: n.download()
-                n.check_qrm(check_signatures=settings.check_signatures, check_similarity=settings.check_similarity)
+                n.check_qrm(check_similarity=settings.check_similarity, check_signatures=settings.check_signatures)
                 print(f'\tPath:\t{n.source_path}')        
-                if settings.check_similarity: print(f'\tSimilarity:\t{n.similarity}')
+                if settings.check_similarity: print(f'\tMatch:\t{n.similarity}')
                 if settings.check_signatures: print(f'\tQRM:\t{n.signatures}')
             
             # write data to workbook

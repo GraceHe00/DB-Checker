@@ -1,15 +1,17 @@
 # libraries
+# import myers # pyright: ignore[reportMissingTypeStubs]
 import os
 from . import settings
 import re
 import subprocess
-import textdistance
+# import textdistance
 
 # classes
 from typing import List
 from zipfile import ZipFile
 
 # methods
+from pyxdameraulevenshtein import normalized_damerau_levenshtein_distance
 from .utils import scrap
 
 class Notebook:
@@ -138,12 +140,11 @@ class Notebook:
         if ignore != None: matches = [m for m in matches if ignore.lower() in m.lower()]
         matches_trimmed: List[str] = []
         for m in matches:
-            if start is None: a = ''
-            else: a = re.escape(start)
-            if end is None: b = ''
-            else: b = re.escape(end)
-            match = re.search(a + r'(.*?)' + b, m)
-            if match: matches_trimmed.append(match.group(1))
+            if start is None or m.find(start) == -1: a = 0
+            else: a = m.find(start) + len(start)
+            if end is None or m.find(end) == -1: b = len(m)
+            else: b = m.find(end)
+            matches_trimmed.append(m[a:b])
         matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
         matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
         return [n for n in matches_no_special if n != '']
@@ -154,6 +155,8 @@ class Notebook:
         """
         if self.local is None: return None
 
+        settings.spinner.start(f'Checking {self.name} for signatures...') # pyright: ignore[reportUnknownMemberType]
+
         self.initial_author = self.__parse_lines__('author')
         self.initial_checker = self.__parse_lines__('checker')
         self.addl_auth = self.__parse_lines__('author', ignore='initial')
@@ -161,22 +164,18 @@ class Notebook:
 
         subsequent = len(self.addl_auth) + len(self.addl_check) != 0
 
-        if len(self.initial_author) == 0:
-            self.qrm = False
-            self.signatures = 'No author'
-        elif len(self.initial_checker) == 0:
-            self.qrm = False
-            self.signatures = f'No checker, last author: {self.initial_author[0]}'
-        elif subsequent and len(self.addl_auth) > len(self.addl_check):
-            self.qrm = False
-            self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
+        if len(self.initial_author) == 0: self.signatures = 'No author'
+        elif len(self.initial_checker) == 0: self.signatures = f'No checker, last author: {self.initial_author[0]}'
+        elif subsequent and len(self.addl_auth) > len(self.addl_check): self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
         else:
             a = self.initial_author + self.addl_auth
             c = self.initial_checker + self.addl_check
             self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
-            self.qrm = True
+        if self.qrm is not None and not self.qrm: self.qrm = self.signatures[:2] == 'No'
+        
+        settings.spinner.stop()
     
-    def __check_similarity__(self, threshold: float = settings.threshold) -> None:
+    def __check_similarity__(self, threshold: float = 1) -> None:
         """
         Get normalized similarity based on Damerau-Levenshtein distance
 
@@ -184,17 +183,31 @@ class Notebook:
             threshold (float):  Minimum amount of match to be considered the same
         """
         if self.local is None: return None
+        settings.spinner.start(f'Comparing {self.name}...') # pyright: ignore[reportUnknownMemberType]
         try: origin = subprocess.run(['databricks','workspace','export',self.path], capture_output=True, text=True, encoding='utf-8').stdout
         except: return None
-        self.similarity = textdistance.damerau_levenshtein.normalized_similarity(origin, self.local)
-        if self.qrm is None or self.qrm: self.qrm = self.similarity >= threshold
+        local_nsp = re.sub(r'\s','',self.local)
+        origin_nsp = re.sub(r'\s','',origin)
+        # self.similarity = self.local == origin
+        self.similarity = local_nsp == origin_nsp
+        # self.similarity = len([i for i in myers.diff(origin, content) if i[0] != 'k']) == 0 # type: ignore
+        # sdl = textdistance.damerau_levenshtein.normalized_similarity(origin, self.local)
+        sdl = 1 - normalized_damerau_levenshtein_distance(local_nsp, origin_nsp)
+        if self.qrm is not None and not self.qrm: self.qrm = self.similarity
+        settings.spinner.stop()
     
-    def check_qrm(self, check_signatures: bool = True, check_similarity: bool = True) -> bool | None:
+    def check_qrm(self, check_similarity: bool = True, check_signatures: bool = True, ) -> bool | None:
         """
         Verify QRM status by checking authors and reviewers
         """
-        self.__get_local__()
-        if self.source_path is None or self.local is None: self.qrm = False
+        if check_similarity or check_signatures:
+            settings.spinner.start(f'Reading {self.name}...') # pyright: ignore[reportUnknownMemberType]
+            self.__get_local__()
+            settings.spinner.stop()
+        else: return None
+        if self.local is None:
+            self.qrm = False
+            return None
         else:
             if check_similarity: self.__check_similarity__()
             if check_signatures: self.__check_signatures__()
