@@ -24,6 +24,7 @@ class Notebook:
             url (str):                  This is the website link to the notebook on Databricks.
 
             source_path (str | None):   This is the directory path to the source file if it exists.
+            zipped (bool | None):       This is whether the source file is in a zipped/compressed folder.
             downloaded (bool | None):   This is whether the source file has been downloaded by this program. If it is None, then it is not applicable because it was already saved to the network.
             qrm (bool):                 This is whether this notebook has been reviewed.
             qrm_status (str):           This is a more granular breakdown of self.qrm, giving info on authors and reviewers.
@@ -38,6 +39,7 @@ class Notebook:
         self.scrap = scrap(self.name)
         
         self.source_path: str | None = None
+        self.zipped: bool | None = None
         self.downloaded: bool | None = None
         self.qrm = False
         self.qrm_status = 'Not reviewed'
@@ -57,9 +59,11 @@ class Notebook:
                 file, extension = os.path.splitext(filename)
                 if file == self.name and settings.check_ext and extension == self.extension:
                     self.source_path = s
+                    self.zipped = '.zip' in self.source_path
                     return True
                 elif file == self.name:
                     self.source_path = s
+                    self.zipped = '.zip' in self.source_path
                     return True
                 else: continue
             except: continue
