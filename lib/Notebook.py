@@ -190,21 +190,19 @@ class Notebook:
         """
         Verify QRM status by checking authors and reviewers
         """
+        if self.source_path is None: return None
         if check_similarity or check_signatures:
             settings.spinner.start(f'Reading {self.name}...') # pyright: ignore[reportUnknownMemberType]
             self.__get_local__()
             settings.spinner.stop()
-        else: return None
-        if self.local is None:
-            self.qrm = False
-            return None
-        else:
+            if self.local is None: return None
             if check_similarity:
                 self.__check_similarity__()
-                if self.qrm is not None and not self.qrm and self.similarity is not None:
+                if self.qrm and self.similarity is not None:
                     if settings.levenshtein: self.qrm = self.similarity >= settings.threshold
                     else: self.qrm = bool(self.similarity)
             if check_signatures:
                 self.__check_signatures__()
-                if self.qrm is not None and not self.qrm: self.qrm = self.signatures[:2] == 'No'
-        return self.qrm
+                if self.qrm: self.qrm = self.signatures[:2] == 'No'
+            return self.qrm
+        else: return None
