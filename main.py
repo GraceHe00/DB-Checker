@@ -69,8 +69,11 @@ for project in project_codes:
                 print(f'{project.code.split("-")[-1]}-{n.subpath.replace("-",": ",1)}')
                 n.match_source_file(project.check_support(n.support))
                 if n.source_path is None and settings.download: n.download()
-                n.check_qrm()
-                print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')        
+                n.check_qrm(check_similarity=settings.check_similarity, check_signatures=settings.check_signatures)
+                print(f'\tPath:\t{n.source_path}')        
+                if settings.levenshtein and n.similarity is not None: print(f'\tMatch:\t{round(n.similarity * 100, 2)}%')
+                elif settings.check_similarity and n.similarity is not None: print(f'\tMatch:\t{bool(n.similarity)}')
+                if settings.check_signatures: print(f'\tQRM:\t{n.signatures}')
             
             # write data to workbook
             if wb is None: wb = xl.create_workbook()

@@ -51,6 +51,12 @@ def setup_config() -> None:
             'one_file':'True',
             'open_file':'True'
         }
+        config['QRM'] = {
+            'check_similarity':'False',
+            'levenshtein': 'False',
+            'threshold':'100',
+            'check_signatures':'True'
+        }
 
         if not os.path.isfile('config.ini'):
             with open('config.ini', 'w') as configfile:
@@ -67,7 +73,21 @@ def setup_config() -> None:
         settings.create_file_structure = config.getboolean('Download','create_file_structure')
         settings.one_file = config.getboolean('Excel','one_file')
         settings.open_file = config.getboolean('Excel','open_file')
-        
+        settings.check_similarity = config.getboolean('QRM','check_similarity')
+        settings.levenshtein = config.getboolean('QRM','levenshtein')
+        if settings.levenshtein:
+            try:
+                threshold_int = int(config.get('QRM','threshold'))
+                if threshold_int < 0 or threshold_int > 100:
+                    print(f'Invalid threshold selected. Must be an integer between 0 and 100 (inclusive).\nPlease update {os.getcwd()}\\config.ini.')
+                    input('Press [ENTER] to continue...')
+                    continue
+                else: settings.threshold = float(int(config.get('QRM','threshold')) / 100)
+            except:
+                print(f'Invalid threshold selected. Must be an integer between 0 and 100 (inclusive).\nPlease update {os.getcwd()}\\config.ini.')
+                input('Press [ENTER] to continue...')
+                continue
+        settings.check_signatures = config.getboolean('QRM','check_signatures')
         settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',') if c.strip() != '']
         settings.scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',') if c.strip() != '']
         settings.scrap_endswith = [c.strip().lower() for c in config.get('Scrap','endswith').split(',') if c.strip() != '']
@@ -80,6 +100,10 @@ def setup_config() -> None:
         if settings.download:
             print(f'Download path:\t\t{settings.export_path}')
             print(f'Create file structure:\t{settings.create_file_structure}')
+        if settings.levenshtein: print(f'Check differences:\tLevenshtein')
+        else: print(f'Check differences:\t{settings.check_similarity}')
+        if settings.levenshtein: print(f'Similarity threshold:\t{settings.threshold}')
+        print(f'Check signatures:\t{settings.check_signatures}')
         print('\nAre these configuration settings correct? [Y] Yes or [N] No')
         valid_answer = False
         while not valid_answer:
