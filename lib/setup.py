@@ -18,8 +18,8 @@ def check_version(owner: str, repo: str, timeout: int = 10) -> None:
         response.raise_for_status()
         data = response.json()
         latest_version = data.get('tag_name').split()[0].replace('v','')
-        if latest_version > settings.version:
-            print(f'WARNING! This version is out of date.\nv{latest_version} is availale at https://github.com/{owner}/{repo}/releases/latest')
+        if latest_version != settings.version:
+            print(f'WARNING! This version may be out of date.\nv{latest_version} is available at https://github.com/{owner}/{repo}/releases/latest')
             input('Press [ENTER] to continue anyways...')
     except: pass
 
