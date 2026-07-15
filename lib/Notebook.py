@@ -161,45 +161,41 @@ class Notebook:
 
         subsequent = len(self.addl_auth) + len(self.addl_check) != 0
 
-        if len(self.initial_author) == 0: self.signatures = 'No author'
-        elif len(self.initial_checker) == 0: self.signatures = f'No checker, last author: {self.initial_author[0]}'
-        elif subsequent and len(self.addl_auth) > len(self.addl_check): self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
+        if len(self.initial_author) == 0:
+            self.qrm = False
+            self.signatures = 'No author'
+        elif len(self.initial_checker) == 0:
+            self.qrm = False
+            self.signatures = f'No checker, last author: {self.initial_author[0]}'
+        elif subsequent and len(self.addl_auth) > len(self.addl_check):
+            self.qrm = False
+            self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
         else:
             a = self.initial_author + self.addl_auth
             c = self.initial_checker + self.addl_check
             self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
+            self.qrm = True
     
-    def __check_similarity__(self) -> None:
+    def __check_similarity__(self, threshold: float = 1) -> None:
         """
         Get normalized similarity based on Hamming distance
+
+        Args:
+            threshold (float):  Minimum amount of match to be considered the same
         """
         if self.local is None: return None
         try: origin = subprocess.run(['databricks','workspace','export',self.path], capture_output=True, text=True, encoding='utf-8').stdout
         except: return None
         self.similarity = textdistance.hamming.normalized_similarity(origin, self.local)
+        if self.qrm is None or self.qrm: self.qrm = self.similarity >= threshold
     
-    def check_qrm(self) -> str:
+    def check_qrm(self, check_signatures: bool = True, check_similarity: bool = True) -> bool | None:
         """
         Verify QRM status by checking authors and reviewers
         """
-        self.__check_signatures__()
-        if self.initial_author == ['failed']: self.signatures = 'Failed to read file'
-        elif self.initial_author == ['zip']: self.signatures = 'Cannot read compressed file'
-        elif self.initial_author == ['missing']:
-            self.signatures = 'File not downloaded'
-            self.qrm = False
-        elif len(self.initial_author) == 0:
-            self.signatures = 'No author'
-            self.qrm = False
-        elif len(self.initial_checker) == 0:
-            self.signatures = f'No checker, last author: {self.initial_author[0]}'
-            self.qrm = False
-        # elif subsequent and len(self.addl_auth) > len(self.addl_check):
-            # self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
-            # self.qrm = False
+        self.__get_local__()
+        if self.source_path is None or self.local is None: self.qrm = False
         else:
-            a = self.initial_author + self.addl_auth
-            c = self.initial_checker + self.addl_check
-            self.qrm = True
-            self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
-        return self.signatures
+            if check_similarity: self.__check_similarity__()
+            if check_signatures: self.__check_signatures__()
+        return self.qrm
