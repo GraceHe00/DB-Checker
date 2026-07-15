@@ -45,6 +45,7 @@ class Notebook:
         self.source_path: str | None = None
         self.zipped: bool | None = None
         self.downloaded: bool | None = None
+        self.local: str | None = None
         self.initial_author: List[str] = []
         self.initial_checker: List[str] = []
         self.addl_auth: List[str] = []
@@ -95,6 +96,26 @@ class Notebook:
             self.source_path = None
             self.downloaded = False
             return f'Error downloading {self.name} to {export_dir}'
+    
+    def __get_local__(self) -> None:
+        """
+        Read local source file
+        """
+        if self.source_path is None: return None
+        if self.zipped:
+            try:
+                z = self.source_path.split('.zip')
+                with ZipFile(z[0] + '.zip','r') as zd:
+                    with zd.open(z[1][1:],'r') as zf:
+                        self.local = zf.read().decode('utf-8')
+                        zf.close()
+            except: return None
+        else:
+            try:
+                with open(self.source_path,mode='r',encoding='utf-8') as f:
+                    self.local = f.read()
+                    f.close()
+            except: return None
 
     def get_lines(self, find: str, start: str = ':', end: str = '\n', ignore: str | None = None) -> List[str]:
         """
