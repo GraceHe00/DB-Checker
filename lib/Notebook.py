@@ -100,23 +100,14 @@ class Notebook:
                 with open(self.source_path,mode='r',encoding='utf-8') as f:
                     matches = [line for line in f if find.lower() in line.lower()]
                     f.close()
-            except EncodingWarning:
-                with open(self.source_path,mode='r',encoding='ascii') as f:
-                    matches = [line for line in f if find.lower() in line.lower()]
-                    f.close()
             except:
                 try:
                     if '.zip' in self.source_path:
                         z = self.source_path.split('.zip')
                         with ZipFile(z[0] + '.zip','r') as zd:
-                            try:
-                                with zd.open(z[1][1:],'r') as zf:
-                                    content = zf.read().decode('utf-8').split('\n')
-                                    zf.close()
-                            except EncodingWarning:
-                                with zd.open(z[1][1:],'r') as zf:
-                                    content = zf.read().decode('ascii').split('\n')
-                                    zf.close()
+                            with zd.open(z[1][1:],'r') as zf:
+                                content = zf.read().decode('utf-8').split('\n')
+                                zf.close()
                         matches = [line for line in content if find.lower() in line.lower()]
                 except: return ['zip']
             if ignore != None: matches = [m for m in matches if ignore.lower() in m.lower()]
