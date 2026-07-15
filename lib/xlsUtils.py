@@ -71,6 +71,7 @@ def write_headers(ws: Worksheet) -> None:
         'Support',
         'Notebook Name',
         'QRM Status',
+        'Similarity',
         'Signatures',
         'Downloaded by DB Checker',
         'Source File',
@@ -94,6 +95,11 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
         elif nb.source_path is None: qrm = 'MISSING'
         if nb.qrm is None: qrm = 'REVIEW REQUIRED'
         else: qrm = 'ISSUE'
+
+        if not settings.check_similarity: s = 'N/A'
+        elif nb.source_path is None: s = ''
+        elif nb.local is None or nb.similarity is None: s = 'Failed to comapre file'
+        else: s = str(round(nb.similarity * 100,0)) + '%'
         
         if not settings.download: d = 'N/A'
         elif nb.downloaded is None: d = 'N/A'
@@ -107,6 +113,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
             nb.support,
             nb.name,
             qrm,
+            s,
             nb.signatures,
             d,
             source_path,
