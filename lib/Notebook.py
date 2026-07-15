@@ -26,6 +26,7 @@ class Notebook:
             source_path (str | None):    This is the directory path to the source file if it exists.
             zipped (bool | None):        This is whether the source file is in a zipped/compressed folder.
             downloaded (bool | None):    This is whether the source file has been downloaded by this program. If it is None, then it is not applicable because it was already saved to the network.
+            local (str | None):          This is the content of the local source file.
             initial_author (List[str]):  This is a list of the initial authors.
             initial_checker (List[str]): This is a list of the initial checkers.
             addl_auth (List[str]):       This is a list of the subsequent authors.
