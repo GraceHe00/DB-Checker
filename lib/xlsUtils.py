@@ -99,7 +99,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
         if not settings.check_similarity: s = 'N/A'
         elif nb.source_path is None: s = ''
         elif nb.local is None or nb.similarity is None: s = 'Failed to comapre file'
-        else: s = str(round(nb.similarity * 100,0)) + '%'
+        else: s = str(round(nb.similarity * 100,2)) + '%'
         
         if not settings.download: d = 'N/A'
         elif nb.downloaded is None: d = 'N/A'

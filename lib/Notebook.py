@@ -1,10 +1,8 @@
 # libraries
-# import myers # pyright: ignore[reportMissingTypeStubs]
 import os
 from . import settings
 import re
 import subprocess
-# import textdistance
 
 # classes
 from typing import List
@@ -188,12 +186,8 @@ class Notebook:
         except: return None
         local_nsp = re.sub(r'\s','',self.local)
         origin_nsp = re.sub(r'\s','',origin)
-        # self.similarity = self.local == origin
-        self.similarity = local_nsp == origin_nsp
-        # self.similarity = len([i for i in myers.diff(origin, content) if i[0] != 'k']) == 0 # type: ignore
-        # sdl = textdistance.damerau_levenshtein.normalized_similarity(origin, self.local)
-        sdl = 1 - normalized_damerau_levenshtein_distance(local_nsp, origin_nsp)
-        if self.qrm is not None and not self.qrm: self.qrm = self.similarity
+        self.similarity = 1 - normalized_damerau_levenshtein_distance(local_nsp, origin_nsp)
+        if self.qrm is not None and not self.qrm: self.qrm = self.similarity >= threshold
         settings.spinner.stop()
     
     def check_qrm(self, check_similarity: bool = True, check_signatures: bool = True, ) -> bool | None:
