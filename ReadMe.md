@@ -38,7 +38,7 @@ This file will be automatically created with the default values on the first run
 * `open_file`: This is a toggle to open the Excel workbook after the program is done running (_True_)
   * Note: This only works if one_file is selected.
 ## QRM
-* `check_similarity`: This will check the [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity. (_False_)
+* `check_similarity`: This will check the [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity. (_False_)
 * `threshold`: This is the minimum percent of similarity that a notebook needs to be considered OK. (_100_)
   * Note: This only works if check_similarity is selected.
 * `check_signatures`: This will check for author and checker signatures. (_True_)

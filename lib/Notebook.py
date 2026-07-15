@@ -33,7 +33,7 @@ class Notebook:
             addl_auth (List[str]):       This is a list of the subsequent authors.
             addl_check (List[str]):      This is a list of the subsequent checkers.
             signatures (str):            This is the most recent author and checker.
-            similarity (float | None):   This is the similarity normalized Hamming distance between the code in the workspace and the source file on the network.
+            similarity (float | None):   This is the similarity normalized Damerau-Levenshtein distance between the code in the workspace and the source file on the network.
             qrm (bool | None):           This is whether this notebook has been reviewed.
             
         """
@@ -178,7 +178,7 @@ class Notebook:
     
     def __check_similarity__(self, threshold: float = 1) -> None:
         """
-        Get normalized similarity based on Hamming distance
+        Get normalized similarity based on Damerau-Levenshtein distance
 
         Args:
             threshold (float):  Minimum amount of match to be considered the same
@@ -186,7 +186,7 @@ class Notebook:
         if self.local is None: return None
         try: origin = subprocess.run(['databricks','workspace','export',self.path], capture_output=True, text=True, encoding='utf-8').stdout
         except: return None
-        self.similarity = textdistance.hamming.normalized_similarity(origin, self.local)
+        self.similarity = textdistance.damerau_levenshtein.normalized_similarity(origin, self.local)
         if self.qrm is None or self.qrm: self.qrm = self.similarity >= threshold
     
     def check_qrm(self, check_signatures: bool = True, check_similarity: bool = True) -> bool | None:
