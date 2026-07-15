@@ -176,7 +176,7 @@ class Notebook:
             self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
             self.qrm = True
     
-    def __check_similarity__(self, threshold: float = 1) -> None:
+    def __check_similarity__(self, threshold: float = settings.threshold) -> None:
         """
         Get normalized similarity based on Damerau-Levenshtein distance
 
