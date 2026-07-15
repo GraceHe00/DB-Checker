@@ -68,7 +68,7 @@ for project in project_codes:
             for n in project.notebooks:
                 print(f'{project.code.split("-")[-1]}-{n.subpath.replace("-",": ",1)}')
                 n.match_source_file(project.check_support(n.support))
-                if n.source_path is None and settings.download: n.download_missing()
+                if n.source_path is None and settings.download: n.download()
                 n.check_qrm()
                 print(f'\tPath:\t{n.source_path}\n\tQRM:\t{n.qrm_status}')        
             

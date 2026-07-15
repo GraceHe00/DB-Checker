@@ -65,7 +65,7 @@ class Notebook:
             except: continue
         return False
     
-    def download_missing(self) -> str:
+    def download(self) -> str:
         """
         Download notebook
         """
