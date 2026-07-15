@@ -71,7 +71,7 @@ def write_headers(ws: Worksheet) -> None:
         'Support',
         'Notebook Name',
         'QRM Status',
-        'QRM Detail',
+        'Signatures',
         'Downloaded by DB Checker',
         'Source File',
         'Notebook URL'
@@ -107,7 +107,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
             nb.support,
             nb.name,
             qrm,
-            nb.qrm_status,
+            nb.signatures,
             d,
             source_path,
             nb.url

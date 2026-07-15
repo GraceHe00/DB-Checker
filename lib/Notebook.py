@@ -17,17 +17,21 @@ class Notebook:
         Represents a Databricks notebook
 
         Args:
-            code (str):                 This is the project code associated with this notebook.
-            path (str):                 This is the Databricks path from the Workspace of this notebook.
-            subpath (str):              This is the Databricks path from the project code of this notebook.
-            extension (str):            This is the associated extension of this notebook (likely either SQL or PY)
-            url (str):                  This is the website link to the notebook on Databricks.
+            code (str):                  This is the project code associated with this notebook.
+            path (str):                  This is the Databricks path from the Workspace of this notebook.
+            subpath (str):               This is the Databricks path from the project code of this notebook.
+            extension (str):             This is the associated extension of this notebook (likely either SQL or PY)
+            url (str):                   This is the website link to the notebook on Databricks.
 
-            source_path (str | None):   This is the directory path to the source file if it exists.
-            zipped (bool | None):       This is whether the source file is in a zipped/compressed folder.
-            downloaded (bool | None):   This is whether the source file has been downloaded by this program. If it is None, then it is not applicable because it was already saved to the network.
-            qrm (bool | None):          This is whether this notebook has been reviewed.
-            qrm_status (str):           This is a more granular breakdown of self.qrm, giving info on authors and reviewers.
+            source_path (str | None):    This is the directory path to the source file if it exists.
+            zipped (bool | None):        This is whether the source file is in a zipped/compressed folder.
+            downloaded (bool | None):    This is whether the source file has been downloaded by this program. If it is None, then it is not applicable because it was already saved to the network.
+            initial_author (List[str]):  This is a list of the initial authors.
+            initial_checker (List[str]): This is a list of the initial checkers.
+            addl_auth (List[str]):       This is a list of the subsequent authors.
+            addl_check (List[str]):      This is a list of the subsequent checkers.
+            qrm (bool | None):           This is whether this notebook has been reviewed.
+            signatures (str):            This is the most recent author and checker.
         """
         self.code = code
         self.path = path
@@ -41,8 +45,12 @@ class Notebook:
         self.source_path: str | None = None
         self.zipped: bool | None = None
         self.downloaded: bool | None = None
+        self.initial_author: List[str] = []
+        self.initial_checker: List[str] = []
+        self.addl_auth: List[str] = []
+        self.addl_check: List[str] = []
         self.qrm: bool | None = None
-        self.qrm_status = 'Not reviewed'
+        self.signatures = 'Not reviewed'
     
     def __str__(self): return self.name
     
@@ -122,7 +130,7 @@ class Notebook:
             return [n for n in matches_no_special if n != '']
         except: return ['failed']
 
-    def get_names(self) -> None:
+    def __check_signatures__(self) -> None:
         """
         Define authors and reviewers for a given source file
         """
@@ -131,31 +139,38 @@ class Notebook:
         self.addl_auth = self.get_lines('author', ignore='initial')
         self.addl_check = self.get_lines('checker', ignore='initial')
 
-        if len(self.addl_auth) + len(self.addl_check) == 0: self.subsequent = False
-        else: self.subsequent = True
+        subsequent = len(self.addl_auth) + len(self.addl_check) != 0
+
+        if len(self.initial_author) == 0: self.signatures = 'No author'
+        elif len(self.initial_checker) == 0: self.signatures = f'No checker, last author: {self.initial_author[0]}'
+        elif subsequent and len(self.addl_auth) > len(self.addl_check): self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
+        else:
+            a = self.initial_author + self.addl_auth
+            c = self.initial_checker + self.addl_check
+            self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
     
     def check_qrm(self) -> str:
         """
         Verify QRM status by checking authors and reviewers
         """
-        self.get_names()
-        if self.initial_author == ['failed']: self.qrm_status = 'Failed to read file'
-        elif self.initial_author == ['zip']: self.qrm_status = 'Cannot read compressed file'
+        self.__check_signatures__()
+        if self.initial_author == ['failed']: self.signatures = 'Failed to read file'
+        elif self.initial_author == ['zip']: self.signatures = 'Cannot read compressed file'
         elif self.initial_author == ['missing']:
-            self.qrm_status = 'File not downloaded'
+            self.signatures = 'File not downloaded'
             self.qrm = False
         elif len(self.initial_author) == 0:
-            self.qrm_status = 'No author'
+            self.signatures = 'No author'
             self.qrm = False
         elif len(self.initial_checker) == 0:
-            self.qrm_status = f'No checker, last author: {self.initial_author[0]}'
+            self.signatures = f'No checker, last author: {self.initial_author[0]}'
             self.qrm = False
-        elif self.subsequent and len(self.addl_auth) > len(self.addl_check):
-            self.qrm_status = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
-            self.qrm = False
+        # elif subsequent and len(self.addl_auth) > len(self.addl_check):
+            # self.signatures = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
+            # self.qrm = False
         else:
             a = self.initial_author + self.addl_auth
             c = self.initial_checker + self.addl_check
             self.qrm = True
-            self.qrm_status = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
-        return self.qrm_status
+            self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
+        return self.signatures
