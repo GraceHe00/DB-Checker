@@ -26,7 +26,7 @@ class Notebook:
             source_path (str | None):   This is the directory path to the source file if it exists.
             zipped (bool | None):       This is whether the source file is in a zipped/compressed folder.
             downloaded (bool | None):   This is whether the source file has been downloaded by this program. If it is None, then it is not applicable because it was already saved to the network.
-            qrm (bool):                 This is whether this notebook has been reviewed.
+            qrm (bool | None):          This is whether this notebook has been reviewed.
             qrm_status (str):           This is a more granular breakdown of self.qrm, giving info on authors and reviewers.
         """
         self.code = code
@@ -41,7 +41,7 @@ class Notebook:
         self.source_path: str | None = None
         self.zipped: bool | None = None
         self.downloaded: bool | None = None
-        self.qrm = False
+        self.qrm: bool | None = None
         self.qrm_status = 'Not reviewed'
     
     def __str__(self): return self.name
@@ -141,10 +141,18 @@ class Notebook:
         self.get_names()
         if self.initial_author == ['failed']: self.qrm_status = 'Failed to read file'
         elif self.initial_author == ['zip']: self.qrm_status = 'Cannot read compressed file'
-        elif self.initial_author == ['missing']: self.qrm_status = 'File not downloaded'
-        elif len(self.initial_author) == 0: self.qrm_status = 'No author'
-        elif len(self.initial_checker) == 0: self.qrm_status = f'No checker, last author: {self.initial_author[0]}'
-        elif self.subsequent and len(self.addl_auth) > len(self.addl_check): self.qrm_status = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
+        elif self.initial_author == ['missing']:
+            self.qrm_status = 'File not downloaded'
+            self.qrm = False
+        elif len(self.initial_author) == 0:
+            self.qrm_status = 'No author'
+            self.qrm = False
+        elif len(self.initial_checker) == 0:
+            self.qrm_status = f'No checker, last author: {self.initial_author[0]}'
+            self.qrm = False
+        elif self.subsequent and len(self.addl_auth) > len(self.addl_check):
+            self.qrm_status = f'No subsequent checker, last subsequent author: {self.addl_auth[-1]}'
+            self.qrm = False
         else:
             a = self.initial_author + self.addl_auth
             c = self.initial_checker + self.addl_check

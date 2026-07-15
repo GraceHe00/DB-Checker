@@ -92,6 +92,7 @@ def write_data(ws: Worksheet, notebooks: List[Notebook]) -> None:
 
         if nb.qrm: qrm = 'OK.'
         elif nb.source_path is None: qrm = 'MISSING'
+        if nb.qrm is None: qrm = 'REVIEW REQUIRED'
         else: qrm = 'ISSUE'
         
         if not settings.download: d = 'N/A'
