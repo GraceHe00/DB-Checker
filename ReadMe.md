@@ -26,3 +26,5 @@ If you experience errors, please see the __Common Issues__ section below. If the
   - Try pressing the down arrow key a few times.
 - Notebooks are being flagged as missing when they aren't actually missing.
   - Verify the spelling of the support folders including any prefixes.
+- The program keeps stalling out.
+  - This is especially common if levenshtein = True in the config file
