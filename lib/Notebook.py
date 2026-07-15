@@ -3,6 +3,7 @@ import os
 from . import settings
 import re
 import subprocess
+import textdistance
 
 # classes
 from typing import List
@@ -31,8 +32,10 @@ class Notebook:
             initial_checker (List[str]): This is a list of the initial checkers.
             addl_auth (List[str]):       This is a list of the subsequent authors.
             addl_check (List[str]):      This is a list of the subsequent checkers.
-            qrm (bool | None):           This is whether this notebook has been reviewed.
             signatures (str):            This is the most recent author and checker.
+            similarity (float | None):   This is the similarity normalized Hamming distance between the code in the workspace and the source file on the network.
+            qrm (bool | None):           This is whether this notebook has been reviewed.
+            
         """
         self.code = code
         self.path = path
@@ -51,8 +54,9 @@ class Notebook:
         self.initial_checker: List[str] = []
         self.addl_auth: List[str] = []
         self.addl_check: List[str] = []
-        self.qrm: bool | None = None
         self.signatures = 'Not reviewed'
+        self.similarity: float | None = None
+        self.qrm: bool | None = None
     
     def __str__(self): return self.name
     
@@ -149,7 +153,7 @@ class Notebook:
         Define authors and reviewers for a given source file
         """
         if self.local is None: return None
-        
+
         self.initial_author = self.__parse_lines__('author')
         self.initial_checker = self.__parse_lines__('checker')
         self.addl_auth = self.__parse_lines__('author', ignore='initial')
@@ -164,6 +168,15 @@ class Notebook:
             a = self.initial_author + self.addl_auth
             c = self.initial_checker + self.addl_check
             self.signatures = f'OK. Last author & checker: {a[-1]} & {c[-1]}'
+    
+    def __check_similarity__(self) -> None:
+        """
+        Get normalized similarity based on Hamming distance
+        """
+        if self.local is None: return None
+        try: origin = subprocess.run(['databricks','workspace','export',self.path], capture_output=True, text=True, encoding='utf-8').stdout
+        except: return None
+        self.similarity = textdistance.hamming.normalized_similarity(origin, self.local)
     
     def check_qrm(self) -> str:
         """
