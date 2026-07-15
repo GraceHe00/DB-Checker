@@ -118,48 +118,40 @@ class Notebook:
                     f.close()
             except: return None
 
-    def get_lines(self, find: str, start: str = ':', end: str = '\n', ignore: str | None = None) -> List[str]:
+    def __parse_lines__(self, find: str, start: str | None = ':', end: str | None = '\n', ignore: str | None = None) -> List[str]:
         """
-        Read a source file and attempt to return list of any text between two values
+        Read source file and attempt to return list of any text between two values
 
         Args:
             find (str):             string in a line that is trying to be found
-            start (str):            return after this character (default: ':')
-            end (str):              end after this character (default: '\n')
+            start (str | None):     return after this character (default: ':')
+            end (str | None):       end after this character (default: '\n')
             ignore (str | None):    ignore a line if it contains this string, even if it is a match (default: None)
         """
-        if self.source_path is None: return ['missing']
-        matches: List[str] = []
-        try:
-            try:
-                with open(self.source_path,mode='r',encoding='utf-8') as f:
-                    matches = [line for line in f if find.lower() in line.lower()]
-                    f.close()
-            except:
-                try:
-                    if '.zip' in self.source_path:
-                        z = self.source_path.split('.zip')
-                        with ZipFile(z[0] + '.zip','r') as zd:
-                            with zd.open(z[1][1:],'r') as zf:
-                                content = zf.read().decode('utf-8').split('\n')
-                                zf.close()
-                        matches = [line for line in content if find.lower() in line.lower()]
-                except: return ['zip']
-            if ignore != None: matches = [m for m in matches if ignore.lower() in m.lower()]
-            matches_trimmed = [m[m.find(start) + len(start):m.find(end)] for m in matches]
-            matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
-            matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
-            return [n for n in matches_no_special if n != '']
-        except: return ['failed']
+        if self.local is None: return []
+        content = self.local.split('\n')
+        matches = [c for c in content if find.lower() in c.lower()]
+        if ignore != None: matches = [m for m in matches if ignore.lower() in m.lower()]
+        matches_trimmed: List[str] = []
+        for m in matches:
+            if start is None: a = ''
+            else: a = re.escape(start)
+            if end is None: b = ''
+            else: b = re.escape(end)
+            match = re.search(a + r'(.*?)' + b, m)
+            if match: matches_trimmed.append(match.group(1))
+        matches_no_html = [re.sub(r'<(.*?)>',' ',m) for m in matches_trimmed]
+        matches_no_special = [re.sub(r'[^a-zA-Z\s]','',m).strip() for m in matches_no_html]
+        return [n for n in matches_no_special if n != '']
 
     def __check_signatures__(self) -> None:
         """
         Define authors and reviewers for a given source file
         """
-        self.initial_author = self.get_lines('author')
-        self.initial_checker = self.get_lines('checker')
-        self.addl_auth = self.get_lines('author', ignore='initial')
-        self.addl_check = self.get_lines('checker', ignore='initial')
+        self.initial_author = self.__parse_lines__('author')
+        self.initial_checker = self.__parse_lines__('checker')
+        self.addl_auth = self.__parse_lines__('author', ignore='initial')
+        self.addl_check = self.__parse_lines__('checker', ignore='initial')
 
         subsequent = len(self.addl_auth) + len(self.addl_check) != 0
 
