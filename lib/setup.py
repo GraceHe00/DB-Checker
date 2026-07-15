@@ -73,6 +73,11 @@ def setup_config() -> None:
         settings.one_file = config.getboolean('Excel','one_file')
         settings.open_file = config.getboolean('Excel','open_file')
         settings.check_similarity = config.getboolean('QRM','check_similarity')
+        threshold_int = int(config.get('QRM','threshold'))
+        if settings.check_similarity and (threshold_int < 0 or threshold_int > 100):
+            print(f'Invalid threshold selected. Must be an integer between 0 and 100 (inclusive).\nPlease update {os.getcwd()}\\config.ini.')
+            input('Press [ENTER] to continue...')
+            continue
         settings.threshold = float(int(config.get('QRM','threshold')) / 100)
         settings.check_signatures = config.getboolean('QRM','check_signatures')
         settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',') if c.strip() != '']
