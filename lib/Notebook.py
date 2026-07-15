@@ -80,6 +80,7 @@ class Notebook:
             os.makedirs(export_dir,exist_ok=True)
             subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
             self.source_path = f'{export_dir}/{self.name}{self.extension}'
+            self.zipped = False
             self.downloaded = True
             return self.source_path
         except:
