@@ -19,7 +19,7 @@ Running in Python will be much faster. To do this, you'll need to either downloa
     - `cd` stands for 'change directory'.
     - Ensure that you are in the right directory by running `dir`. You should see all of the files and folders from the DB Checker repository.
 1. You can run the program by now running `python main.py`.
-    - Unless you already have all of the dependencies, you are likely to encounter a ModuleNotFoundError.<br /><img src='img/no-module.png' /><br />In the image above, I am missing the openpyxl module, so I will run `pip install openpyxl` to install this dependency.<br /><img src='img/pip-install.png' />
+    - Unless you already have all of the dependencies, you are likely to encounter a ModuleNotFoundError.<br /><img src='img/no-module.png' /><br />In the image above, I am missing the openpyxl module, so I will run `pip install openpyxl` to install this dependency.<br /><img src='img/pip-install.png' /><br />Once you've installed the dependency, you will not need to install it on subsequent runs.
         - You may need to repeat this step multiple times in order to install all of the dependencies. Some of them will already be available on your computer from when you installed Python. A full list of all dependencies used is below:
             - `openpyxl`: used for creating Excel documents
             - `os`: OS routines for NT or Posix depending on what system we're on
@@ -47,4 +47,4 @@ Running in Python will be much faster. To do this, you'll need to either downloa
                     - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
                     - Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
                     - Neither the name of Triad National Security, LLC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-1. To exit the program early, you may either exit out of Windows Powershell or you can introduce a KeyboardInterrupt by pressing `Ctrl` + `C`.
+1. To exit the program early, you may either exit out of Windows Powershell, or you can introduce a KeyboardInterrupt by pressing `Ctrl` + `C`.
