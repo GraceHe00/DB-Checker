@@ -21,7 +21,7 @@ This file will be automatically created with the default values on the first run
 * `check_similarity`: This will check if the notebook in the Databricks workspace and the source file on the network are the same for all _non-whitespace characters_. (_False_)
 * `levenshtein`: This will check the [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity of all _non-whitespace characters_. (_False_)
   * Note: This will overwrite the setting for check_similarity.
-  * Warning: Because Damerau-Levenshtein runs in O(n^2) time, be prepared for this to take longer, especially if there are large differences between files.
+  * _Warning: Because Damerau-Levenshtein runs in $`O(n^2)`$ time, be prepared for this to take longer, especially if there are large differences between files._
 * `threshold`: This is the minimum percent of similarity that a notebook needs to be considered OK. (_100_)
   * Note: This only works if levenshtein is selected.
 * `check_signatures`: This will check for author and checker signatures. (_True_)
