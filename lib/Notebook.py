@@ -5,6 +5,7 @@ import re
 import subprocess
 
 # classes
+from datetime import datetime
 from typing import List
 from zipfile import ZipFile
 
@@ -100,6 +101,9 @@ class Notebook:
             self.source_path = f'{export_path}/{self.name}{self.extension}'
             self.zipped = False
             self.downloaded = True
+            with open(f'{export_path}/ReadMe.txt','a') as readme:
+                readme.write(f'{self.name}{self.extension} downloaded by {os.environ.get("USERNAME")} at {datetime.now().strftime("%H:%M")} on {datetime.now().strftime("%B %d, %Y")}')
+                readme.close()
             return self.source_path
         except:
             self.source_path = None

@@ -91,16 +91,6 @@ for project in project_codes:
                 xlsx_file = f'DB_Check_{project.code}_{time_signature}.xlsx'
                 xl.save(wb, xlsx_file)
                 wb = None
-            
-            # update ReadMe for downloads
-            if settings.download and settings.create_file_structure:
-                if Path(f'{settings.export_path}/{project.code}').exists():
-                    with open(f'{settings.export_path}/{project.code}/ReadMe.txt','a') as readme:
-                        xlsx_path = os.getcwd()
-                        if settings.one_file: xlsx_path += f'\\DB_Check_{time_signature}.xlsx'
-                        else: xlsx_path = f'\\DB_Check_{project.code}_{time_signature}.xlsx'
-                        readme.write(f'DB_Checker {settings.version} ran by {os.environ.get("USERNAME")} at {start_time.strftime("%H:%M")} on {start_time.strftime("%B %d, %Y")}.\nSee {xlsx_path} for more information.\n\n')
-                    readme.close()
 
         else:
             # no notebooks found
