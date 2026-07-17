@@ -11,7 +11,7 @@ This file will be automatically created with the default values on the first run
 * `endswith`: Any notebook title or directory name ending with any value in this comma-delimited list of terms or phrases will be skipped (_\_tr,- copy_)
 ## Download
 * `download`: This is the toggle to download notebooks flagged as missing (_False_)
-* `overwrite`: This is a toggle to overwrite existing notebooks.
+* `overwrite`: This is a toggle to overwrite existing notebooks (_False_)
 * `export_path`: This is the export location (_current working directory_)
 * `create_file_structure`: If true, files will export to a subfolder with a file structure similar to the S drive ; else, files will export to export_path (_True_)
 ## Excel
