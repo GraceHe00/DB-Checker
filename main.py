@@ -70,7 +70,7 @@ for project in project_codes:
                 if n.source_path is None and settings.download:
                     if settings.create_file_structure: export_path = f'{settings.export_path}/{project.code}/5-Support_Files/{n.support}/Databricks_Programs'
                     else: export_path = f'{settings.export_path}'
-                    n.download(export_path.replace('\\','/'))
+                    n.download(export_path.replace('\\','/'), settings.overwrite)
                 n.check_qrm(check_similarity=settings.check_similarity, check_signatures=settings.check_signatures)
                 print(f'\tPath:\t{n.source_path}')        
                 if settings.levenshtein and n.similarity is not None: print(f'\tMatch:\t{round(n.similarity * 100, 2)}%')

@@ -19,6 +19,7 @@ def init() -> None:
     global client
     global check_ext
     global download
+    global overwrite
     global export_path
     global create_file_structure
     global one_file
@@ -37,6 +38,7 @@ client_code: str
 client: str
 check_ext: bool
 download: bool
+overwrite: bool
 export_path: str
 create_file_structure: bool
 one_file: bool

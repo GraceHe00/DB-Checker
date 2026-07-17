@@ -44,6 +44,7 @@ def setup_config() -> None:
         }
         config['Download'] = {
             'download':'False',
+            'overwrite':'False',
             'export_path':os.getcwd(),
             'create_file_structure':'True'
         }
@@ -69,6 +70,7 @@ def setup_config() -> None:
         settings.client = settings.client_code[4:]
         settings.check_ext = config.getboolean('General','check_extensions')
         settings.download = config.getboolean('Download','download')
+        settings.overwrite = config.getboolean('Download','overwrite')
         settings.export_path = config.get('Download','export_path')
         settings.create_file_structure = config.getboolean('Download','create_file_structure')
         settings.one_file = config.getboolean('Excel','one_file')
@@ -98,6 +100,7 @@ def setup_config() -> None:
         print(f'Save as one file:\t{settings.one_file}')
         print(f'Download missing:\t{settings.download}')
         if settings.download:
+            print(f'Overwrite:\t\t{settings.overwrite}')
             print(f'Download path:\t\t{settings.export_path}')
             print(f'Create file structure:\t{settings.create_file_structure}')
         if settings.levenshtein: print(f'Check differences:\tLevenshtein')
