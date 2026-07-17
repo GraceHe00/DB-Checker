@@ -102,7 +102,7 @@ class Notebook:
             self.zipped = False
             self.downloaded = True
             with open(f'{export_path}/ReadMe.txt','a') as readme:
-                readme.write(f'{self.name}{self.extension} downloaded by {os.environ.get("USERNAME")} at {datetime.now().strftime("%H:%M")} on {datetime.now().strftime("%B %d, %Y")}')
+                readme.write(f'{self.name}{self.extension} downloaded by {os.environ.get("USERNAME")} at {datetime.now().strftime("%H:%M")} on {datetime.now().strftime("%B %d, %Y")}\n\n')
                 readme.close()
             return self.source_path
         except:
@@ -197,6 +197,10 @@ class Notebook:
     def check_qrm(self, check_similarity: bool = True, check_signatures: bool = True) -> bool | None:
         """
         Verify QRM status by checking authors and reviewers
+
+        Args:
+            check_similarity (bool):    Check similarity between live Databricks workspace version and downloaded source file (default: True)
+            check_signatures (bool):    Check for author and checker signatures (default: True)
         """
         if self.source_path is None: return None
         if check_similarity or check_signatures:
