@@ -13,7 +13,6 @@ import lib.xlsUtils as xl
 # classes
 from datetime import datetime
 from typing import List
-from pathlib import Path
 from lib.ProjectCode import ProjectCode
 
 #%% INITIALIZATION
