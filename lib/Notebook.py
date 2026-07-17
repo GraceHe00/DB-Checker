@@ -83,24 +83,28 @@ class Notebook:
             except: continue
         return False
     
-    def download(self) -> str:
+    def download(self, export_path: str, overwrite: bool = False) -> str:
         """
         Download notebook
+
+        Args:
+            export_path (str):  This is the path to export the notebook.
+            overwrite (bool):   This is a boolean to overwrite an existing file if exists.
         """
-        if settings.create_file_structure: export_dir = f'{settings.export_path}/{self.code}/5-Support_Files/{self.support}/Databricks_Programs'
-        else: export_dir = f'{settings.export_path}'
-        export_dir = export_dir.replace('\\','/')
         try:
-            os.makedirs(export_dir,exist_ok=True)
-            subprocess.run(['databricks','workspace','export-dir','--overwrite',self.path,f'{export_dir}/{self.name}'],capture_output=True,text=True)
-            self.source_path = f'{export_dir}/{self.name}{self.extension}'
+            os.makedirs(export_path,exist_ok=True)
+            export_cmd = ['databricks','workspace','export-dir']
+            if overwrite: export_cmd.append('--overwrite')
+            export_cmd.append(f'{export_path}/{self.name}')
+            subprocess.run(export_cmd,capture_output=True,text=True)
+            self.source_path = f'{export_path}/{self.name}{self.extension}'
             self.zipped = False
             self.downloaded = True
             return self.source_path
         except:
             self.source_path = None
             self.downloaded = False
-            return f'Error downloading {self.name} to {export_dir}'
+            return f'Error downloading {self.name} to {export_path}'
     
     def __get_local__(self) -> None:
         """
