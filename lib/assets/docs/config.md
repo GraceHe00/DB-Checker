@@ -11,7 +11,7 @@ This file will be automatically created with the default values on the first run
 * `endswith`: Any notebook title or directory name ending with any value in this comma-delimited list of terms or phrases will be skipped (_\_tr,- copy_)
 ## Download
 * `download`: This is the toggle to download notebooks flagged as missing (_False_)
-* `overwrite`: This is a toggle to overwrite existing notebooks (_False_)
+* `overwrite`: This is a toggle to overwrite existing notebooks. This does not affect the replace_old option (_False_)
 * `export_path`: This is the export location (_current working directory_)
 * `create_file_structure`: If true, files will export to a subfolder with a file structure similar to the S drive ; else, files will export to export_path (_True_)
 ## Excel
@@ -23,6 +23,8 @@ This file will be automatically created with the default values on the first run
 * `levenshtein`: This will check the [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity of all _non-whitespace characters_. (_False_)
   * Note: This will overwrite the setting for check_similarity.
   * _Warning: Because Damerau-Levenshtein runs in $`O(n^2)`$ time, be prepared for this to take longer, especially if there are large differences between files._
-* `threshold`: This is the minimum percent of similarity that a notebook needs to be considered OK. (_100_)
+* `threshold`: This is the minimum percent of similarity that a notebook needs to be considered OK. This is also used to determine if a file gets replaced (see Download section)(_100_)
   * Note: This only works if levenshtein is selected.
+* `replace_old`: If true, this will _OVERWRITE_ a source file downloaded to the network that is determined to be out of date with the live version in the Databricks workspace. This is not affected by any(_False_)
+  * Note: This only works if either check_similarity or levenshtein are selected
 * `check_signatures`: This will check for author and checker signatures. (_True_)

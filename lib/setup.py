@@ -46,7 +46,7 @@ def setup_config() -> None:
             'download':'False',
             'overwrite':'False',
             'export_path':os.getcwd(),
-            'create_file_structure':'True'
+            'create_file_structure':'True',
         }
         config['Excel'] = {
             'one_file':'True',
@@ -56,6 +56,7 @@ def setup_config() -> None:
             'check_similarity':'False',
             'levenshtein': 'False',
             'threshold':'100',
+            'replace_old': 'False',
             'check_signatures':'True'
         }
 
@@ -89,6 +90,7 @@ def setup_config() -> None:
                 print(f'Invalid threshold selected. Must be an integer between 0 and 100 (inclusive).\nPlease update {os.getcwd()}\\config.ini.')
                 input('Press [ENTER] to continue...')
                 continue
+        settings.replace = config.getboolean('Download','replace_old')
         settings.check_signatures = config.getboolean('QRM','check_signatures')
         settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',') if c.strip() != '']
         settings.scrap_startswith = [c.strip().lower() for c in config.get('Scrap','startswith').split(',') if c.strip() != '']
