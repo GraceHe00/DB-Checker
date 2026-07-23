@@ -24,30 +24,20 @@ Running in Python will be much faster. To do this, you'll need to either downloa
 1. To exit the program early, you may either exit out of Windows Powershell, or you can introduce a KeyboardInterrupt by pressing `Ctrl` + `C`.
 
 ### Installing the Dependencies
-<img src='img/no-module.png' /><br />In the image above, I am missing the openpyxl module, so I will run `pip install openpyxl` to install this dependency.<br /><img src='img/pip-install.png' /><br />Once you've installed the dependency, you will not need to install it on subsequent runs.<br />You may need to repeat this step multiple times in order to install all of the dependencies. Some of them will already be available on your computer from when you installed Python. A full list of all dependencies used is below:
-- `openpyxl`: used for creating Excel documents
-- `os`: OS routines for NT or Posix depending on what system we're on
-- `datetime`: specific date/time and related types
-- `typing`: support for gradual typing as defined by PEP 484 and subsequent PEPs
-- `pathlib`: object-oriented filesystem paths
-    - This module provides classes to represent abstract paths and concrete paths with operations that have semantics appropriate for different operating systems.
-- `subprocess`: subprocesses with accessible I/O streams
-    - This is used to interact with the Databricks CLI.
-    - This module allows you to spawn processes, connect to their input/output/error pipes, and obtain their return codes.
-- `re`: support for regular expressions (RE)
-    - This module provides regular expression matching operations similar to those found in Perl. It supports both 8-bit and Unicode strings; both the pattern and the strings being processed can contain null bytes and characters outside the US ASCII range.
-- `glob`: filename globbing utility
-    - 'Globbing' is using wildcard patterns to match filenames, allowing for flexible selection of files or directories within a filesystem.
-- `zipfile`: read and write ZIP files
-- `configparser`: configuration file parser
-    - A configuration file consists of sections, lead by a "[section]" header, and followed by "name: value" entries, with continuations and such in the style of RFC 822.
-- `sys`: built-in functions, types, exceptions, and other objects
-    - This module provides direct access to all 'built-in' identifiers of Python; for example, builtins.len is the full name for the built-in function len().
-- `halo`: loading spinner
-- `requests`: requests HTTP library
-    - This is used to check the program's version against the latest release in GitHub.
-- `pyxdameraulevenshtein`: used to calculate the Damerau-Levenshtein distance between two sequences
-    - Copyright (c) 2013, Triad National Security, LLC All rights reserved. Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-        - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-        - Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-        - Neither the name of Triad National Security, LLC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+<img src='img/no-module.png' /><br />In the image above, I am missing the openpyxl module, so I will run `pip install openpyxl` to install this dependency.<br /><img src='img/pip-install.png' /><br />Once you've installed the dependency, you will not need to install it on subsequent runs.<br />You may need to repeat this step multiple times in order to install all of the dependencies. Some of them will already be available on your computer from when you installed Python.<br />A full list of all dependencies used is below:
+| Module | Use |
+| ---------- | ---------- |
+| `openpyxl` | Used for creating Excel documents |
+| `os` | OS routines for NT or Posix depending on what system we're on |
+| `datetime` | specific date/time and related types |
+| `typing` | support for gradual typing as defined by PEP 484 and subsequent PEPs |
+| `pathlib` | object-oriented filesystem paths<br />This module provides classes to represent abstract paths and concrete paths with operations that have semantics appropriate for different operating systems. |
+| `subprocess` | subprocesses with accessible I/O streams<br />This is used to interact with the Databricks CLI.<br />This module allows you to spawn processes, connect to their input/output/error pipes, and obtain their return codes. |
+| `re` | support for regular expressions (RE)<br />This module provides regular expression matching operations similar to those found in Perl. It supports both 8-bit and Unicode strings; both the pattern and the strings being processed can contain null bytes and characters outside the US ASCII range. |
+| `glob` | filename globbing utility<br />'Globbing' is using wildcard patterns to match filenames, allowing for flexible selection of files or directories within a filesystem. |
+| `zipfile` | read and write ZIP files |
+| `configparser` | configuration file parser<br />A configuration file consists of sections, lead by a "[section]" header, and followed by "name: value" entries, with continuations and such in the style of RFC 822. |
+| `sys` | built-in functions, types, exceptions, and other objects<br />This module provides direct access to all 'built-in' identifiers of Python; for example, builtins.len is the full name for the built-in function len(). |
+| `halo` | loading spinner |
+| `requests` | requests HTTP library<br /> |
+| `pyxdameraulevenshtein` | used to calculate the Damerau-Levenshtein distance between two sequences<br /><br />Copyright (c) 2013, Triad National Security, LLC All rights reserved. Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:<br /><li>Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</li><li>Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</li><li>Neither the name of Triad National Security, LLC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.</li> |
