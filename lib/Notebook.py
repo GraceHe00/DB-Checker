@@ -211,7 +211,7 @@ class Notebook:
             if check_similarity:
                 self.__check_similarity__()
                 if (self.qrm or self.qrm is None)and self.similarity is not None:
-                    if settings.levenshtein: self.qrm = self.similarity >= settings.threshold
+                    if settings.levenshtein: self.qrm = self.similarity >= 1
                     else: self.qrm = bool(self.similarity)
             if check_signatures:
                 self.__check_signatures__()

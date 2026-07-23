@@ -55,7 +55,6 @@ def setup_config() -> None:
         config['QRM'] = {
             'check_similarity':'False',
             'levenshtein': 'False',
-            'threshold':'100',
             'replace_old': 'False',
             'check_signatures':'True'
         }
@@ -78,18 +77,6 @@ def setup_config() -> None:
         settings.open_file = config.getboolean('Excel','open_file')
         settings.check_similarity = config.getboolean('QRM','check_similarity')
         settings.levenshtein = config.getboolean('QRM','levenshtein')
-        if settings.levenshtein:
-            try:
-                threshold_int = int(config.get('QRM','threshold'))
-                if threshold_int < 0 or threshold_int > 100:
-                    print(f'Invalid threshold selected. Must be an integer between 0 and 100 (inclusive).\nPlease update {os.getcwd()}\\config.ini.')
-                    input('Press [ENTER] to continue...')
-                    continue
-                else: settings.threshold = float(int(config.get('QRM','threshold')) / 100)
-            except:
-                print(f'Invalid threshold selected. Must be an integer between 0 and 100 (inclusive).\nPlease update {os.getcwd()}\\config.ini.')
-                input('Press [ENTER] to continue...')
-                continue
         settings.replace = config.getboolean('Download','replace_old')
         settings.check_signatures = config.getboolean('QRM','check_signatures')
         settings.scrap_contains = [c.strip().lower() for c in config.get('Scrap','contains').split(',') if c.strip() != '']
@@ -107,7 +94,6 @@ def setup_config() -> None:
             print(f'Create file structure:\t{settings.create_file_structure}')
         if settings.levenshtein: print(f'Check differences:\tLevenshtein')
         else: print(f'Check differences:\t{settings.check_similarity}')
-        if settings.levenshtein: print(f'Similarity threshold:\t{settings.threshold}')
         print(f'Check signatures:\t{settings.check_signatures}')
         print('\nAre these configuration settings correct? [Y] Yes or [N] No')
         valid_answer = False

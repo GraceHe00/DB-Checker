@@ -76,7 +76,7 @@ for project in project_codes:
                 if settings.levenshtein and n.similarity is not None: print(f'\tMatch:\t{round(n.similarity * 100, 2)}%')
                 elif settings.check_similarity and n.similarity is not None: print(f'\tMatch:\t{bool(n.similarity)}')
                 if n.similarity is not None and settings.replace and n.source_path is not None:
-                    if (settings.levenshtein and n.similarity < settings.threshold) or (settings.check_similarity and n.similarity == 0):
+                    if (settings.levenshtein and n.similarity < 1) or (settings.check_similarity and n.similarity == 0):
                         n.download(n.source_path, True)
                         n.check_qrm(check_similarity=settings.check_similarity, check_signatures=settings.check_signatures)
                 if settings.check_signatures: print(f'\tQRM:\t{n.signatures}')

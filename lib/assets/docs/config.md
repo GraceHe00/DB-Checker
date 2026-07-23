@@ -23,7 +23,6 @@ This file will be automatically created with the default values on the first run
 * `levenshtein`: This will check the [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity of all _non-whitespace characters_. (_False_)
   * Note: This will overwrite the setting for check_similarity.
   * _Warning: Because Damerau-Levenshtein runs in $`O(n^2)`$ time, be prepared for this to take longer, especially if there are large differences between files._
-* `threshold`: This is the minimum percent of similarity that a notebook needs to be considered OK. This is also used to determine if a file gets replaced (see Download section)(_100_)
   * Note: This only works if levenshtein is selected.
 * `replace_old`: If true, this will _OVERWRITE_ a source file downloaded to the network that is determined to be out of date with the live version in the Databricks workspace. This is not affected by any(_False_)
   * Note: This only works if either check_similarity or levenshtein are selected
