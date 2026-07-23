@@ -1,8 +1,9 @@
 # Configuration in config.ini
-This file will be automatically created with the default values on the first run of DB_checker.exe if it does not exist. If any variables are omitted or removed from the configuration file, the default values will be used for fallback. (_Default values in italics_)
+This file will be automatically created with the default values on the first run of DB_checker.exe if it does not exist. If any variables are omitted or removed from the configuration file, the default values will be used for fallback. (_Default values in italics_)<br />If you do not see one of these options in your config.ini file, you can delete and re-run the program since it will generate a new version reset at default values.
 ## General
 * `host_url`: This is your Databricks host URL; typically the first part of any DB notebook URL and was used to authenticate Databricks CLI (_https://adb-7405618167364399.19.azuredatabricks.net_)
 * `workspace_path`: This is the Databricks workspace path that contains the project folders (_/Workspace/Shared/ILM_Project_Codes/_)
+  - If you would like to check against old capitation rate development folders, update the workspace path to the appropriate folder.
 * `client_code`: This is the client code (_0032ILM_)
 * `check_extensions`: This is the toggle to force matching extensions (most of the time notebooks are downloaded as SQL but DB might recognize the notebook as a PY file) (_False_)
 ## Scrap
@@ -23,7 +24,6 @@ This file will be automatically created with the default values on the first run
 * `levenshtein`: This will check the [Damerau-Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance) between the notebook in the Databricks workspace and the source file on the network. It will return the normalized similarity of all _non-whitespace characters_. (_False_)
   * Note: This will overwrite the setting for check_similarity.
   * _Warning: Because Damerau-Levenshtein runs in $`O(n^2)`$ time, be prepared for this to take longer, especially if there are large differences between files._
-  * Note: This only works if levenshtein is selected.
 * `replace_old`: If true, this will _OVERWRITE_ a source file downloaded to the network that is determined to be out of date with the live version in the Databricks workspace. This is not affected by any(_False_)
   * Note: This only works if either check_similarity or levenshtein are selected
 * `check_signatures`: This will check for author and checker signatures. (_True_)
