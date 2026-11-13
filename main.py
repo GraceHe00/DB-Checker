@@ -12,7 +12,6 @@ import lib.xlsUtils as xl
 
 # classes
 from datetime import datetime
-from typing import List
 from pathlib import Path
 from lib.ProjectCode import ProjectCode
 
@@ -40,7 +39,7 @@ else: print(f'{cli_version}{host_url}\n')
 
 #%% START
 # get project codes
-project_codes: List[ProjectCode] = []
+project_codes: list[ProjectCode] = []
 p: str | None = None
 print('Enter FULL project codes to check. (Press [ENTER] between each entry. Leave blank and press [ENTER] to continue.)')
 while p != '' or len(project_codes) == 0:
